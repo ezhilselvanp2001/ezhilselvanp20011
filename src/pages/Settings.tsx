@@ -93,51 +93,51 @@ function Settings() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your account preferences and settings</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your account preferences and settings</p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* Appearance */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <Clock className="w-6 h-6 mr-2 text-indigo-600" />
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+            <Clock className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-indigo-600" />
             Appearance
           </h2>
           
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Time Format */}
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg">
               <div>
-                <h3 className="font-medium text-gray-900">Time Format</h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <h3 className="text-sm sm:text-base font-medium text-gray-900">Time Format</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   {TIME_FORMATS[settings.timeFormat as keyof typeof TIME_FORMATS]}
                 </p>
               </div>
               <button
                 onClick={() => setIsTimeFormatModalOpen(true)}
-                className="inline-flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
               >
-                <Edit className="w-4 h-4 mr-1" />
+                <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 Edit
               </button>
             </div>
 
             {/* Decimal Format */}
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg">
               <div>
-                <h3 className="font-medium text-gray-900">Decimal Format</h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <h3 className="text-sm sm:text-base font-medium text-gray-900">Decimal Format</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   {DECIMAL_FORMATS[settings.decimalFormat as keyof typeof DECIMAL_FORMATS]}
                 </p>
               </div>
               <button
                 onClick={() => setIsDecimalFormatModalOpen(true)}
-                className="inline-flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
               >
-                <Edit className="w-4 h-4 mr-1" />
+                <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 Edit
               </button>
             </div>
@@ -145,22 +145,22 @@ function Settings() {
         </div>
 
         {/* Preferences */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <Globe className="w-6 h-6 mr-2 text-indigo-600" />
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+            <Globe className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-indigo-600" />
             Preferences
           </h2>
           
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Currency */}
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg">
               <div>
-                <h3 className="font-medium text-gray-900">Currency</h3>
+                <h3 className="text-sm sm:text-base font-medium text-gray-900">Currency</h3>
                 <div className="flex items-center mt-1">
                   {getCurrentCurrency() && (
                     <>
-                      <span className="text-lg mr-2">{getCurrentCurrency()?.flag}</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-base sm:text-lg mr-1 sm:mr-2">{getCurrentCurrency()?.flag}</span>
+                      <span className="text-xs sm:text-sm text-gray-500">
                         {getCurrentCurrency()?.country} - {getCurrentCurrency()?.name} ({getCurrentCurrency()?.symbol})
                       </span>
                     </>
@@ -169,26 +169,26 @@ function Settings() {
               </div>
               <button
                 onClick={() => setIsCurrencyModalOpen(true)}
-                className="inline-flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
               >
-                <Edit className="w-4 h-4 mr-1" />
+                <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 Edit
               </button>
             </div>
 
             {/* Number Format */}
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg">
               <div>
-                <h3 className="font-medium text-gray-900">Number Format</h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <h3 className="text-sm sm:text-base font-medium text-gray-900">Number Format</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   {NUMBER_FORMATS[settings.numberFormat as keyof typeof NUMBER_FORMATS]}
                 </p>
               </div>
               <button
                 onClick={() => setIsNumberFormatModalOpen(true)}
-                className="inline-flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
               >
-                <Edit className="w-4 h-4 mr-1" />
+                <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 Edit
               </button>
             </div>
@@ -196,16 +196,16 @@ function Settings() {
         </div>
 
         {/* Notifications */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <Bell className="w-6 h-6 mr-2 text-indigo-600" />
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+            <Bell className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-indigo-600" />
             Notifications
           </h2>
           
-          <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg">
             <div>
-              <h3 className="font-medium text-gray-900">Daily Reminder</h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <h3 className="text-sm sm:text-base font-medium text-gray-900">Daily Reminder</h3>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">
                 {settings.dailyReminder ? 'Remind me daily at 7:00 PM' : 'Daily reminders are disabled'}
               </p>
             </div>
@@ -226,45 +226,45 @@ function Settings() {
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
-          <h2 className="text-xl font-semibold text-red-900 mb-6 flex items-center">
-            <AlertTriangle className="w-6 h-6 mr-2 text-red-600" />
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 border-l-4 border-red-500">
+          <h2 className="text-lg sm:text-xl font-semibold text-red-900 mb-4 sm:mb-6 flex items-center">
+            <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-red-600" />
             Danger Zone
           </h2>
           
           <div className="space-y-4">
             {/* Clear Data */}
-            <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border border-red-200 rounded-lg bg-red-50 gap-3 sm:gap-0">
               <div>
-                <h3 className="font-medium text-red-900">Delete Data & Start Afresh</h3>
-                <p className="text-sm text-red-600 mt-1">
+                <h3 className="text-sm sm:text-base font-medium text-red-900">Delete Data & Start Afresh</h3>
+                <p className="text-xs sm:text-sm text-red-600 mt-1">
                   This will permanently delete all your data but keep your account
                 </p>
               </div>
               <button
                 onClick={() => setIsClearDataModalOpen(true)}
                 disabled={clearAllData.isPending}
-                className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="inline-flex items-center px-3 sm:px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 text-xs sm:text-sm"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Clear Data
               </button>
             </div>
 
             {/* Delete Account */}
-            <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border border-red-200 rounded-lg bg-red-50 gap-3 sm:gap-0">
               <div>
-                <h3 className="font-medium text-red-900">Delete Account</h3>
-                <p className="text-sm text-red-600 mt-1">
+                <h3 className="text-sm sm:text-base font-medium text-red-900">Delete Account</h3>
+                <p className="text-xs sm:text-sm text-red-600 mt-1">
                   This will permanently delete your account and all data. This action cannot be undone.
                 </p>
               </div>
               <button
                 onClick={() => setIsDeleteAccountModalOpen(true)}
                 disabled={deleteAccount.isPending}
-                className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="inline-flex items-center px-3 sm:px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 text-xs sm:text-sm"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Delete Account
               </button>
             </div>

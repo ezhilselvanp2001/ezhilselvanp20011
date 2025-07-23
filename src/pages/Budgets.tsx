@@ -193,30 +193,30 @@ function Budgets() {
   const budgetType = activeTab === 0 ? 'Monthly' : 'Yearly';
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Budgets</h1>
-          <p className="text-gray-600 mt-1">Track and manage your spending limits</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Budgets</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Track and manage your spending limits</p>
         </div>
         <Link
           to="/budgets/add"
-          className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          className="mt-3 sm:mt-0 inline-flex items-center px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-xs sm:text-sm"
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
           Add Budget
         </Link>
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-gray-100 rounded-lg p-1 mb-8">
+      <div className="flex bg-gray-100 rounded-lg p-1 mb-6 sm:mb-8">
         {tabs.map((tab, index) => {
           const active = activeTab === index;
           return (
             <button
               key={tab}
               onClick={() => setActiveTab(index)}
-              className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
+              className={`flex-1 text-xs sm:text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
                 active
                   ? "bg-white shadow text-black"
                   : "text-gray-500 hover:text-black"
@@ -230,33 +230,33 @@ function Budgets() {
 
       {/* Active Budget */}
       {currentData?.active[0] ? (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Active {budgetType} Budget {currentData.active[0]?.month}</h2>
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Active {budgetType} Budget</h2>
           <BudgetCard budget={currentData.active[0]} isActive={true} />
         </div>
       ) : (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Active {budgetType} Budget</h2>
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Active {budgetType} Budget</h2>
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <EmptyState type={budgetType} status="active" />
           </div>
         </div>
       )}
 
       {/* Upcoming Budgets */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming {budgetType} Budgets</h2>
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Upcoming {budgetType} Budgets</h2>
         <div className="bg-white rounded-lg shadow">
           {currentData?.upcoming && currentData.upcoming.length > 0 ? (
             <div className="divide-y divide-gray-200">
               {currentData.upcoming.map((budget) => (
-                <div key={budget.id} className="p-6">
+                <div key={budget.id} className="p-4 sm:p-6">
                   <BudgetCard budget={budget} />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <EmptyState type={budgetType} status="upcoming" />
             </div>
           )}
@@ -265,18 +265,18 @@ function Budgets() {
 
       {/* Past Budgets */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Past {budgetType} Budgets</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Past {budgetType} Budgets</h2>
         <div className="bg-white rounded-lg shadow">
           {currentData?.past && currentData.past.length > 0 ? (
             <div className="divide-y divide-gray-200">
               {currentData.past.map((budget) => (
-                <div key={budget.id} className="p-6">
+                <div key={budget.id} className="p-4 sm:p-6">
                   <BudgetCard budget={budget} />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <EmptyState type={budgetType} status="past" />
             </div>
           )}
