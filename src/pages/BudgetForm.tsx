@@ -428,14 +428,14 @@ function BudgetForm() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-          {!isEditing && step === 1 ? (
+          {step === 1 ? (
             <button
               type="button"
               onClick={handleNext}
-              disabled={selectedCategories.length === 0}
+              disabled={selectedCategories.length === 0 || !watchedValues.totalLimit || watchedValues.totalLimit <= 0}
               className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next: Set Category Limits
+              {isEditing ? 'Update Budget' : 'Next: Set Category Limits'}
             </button>
           ) : (
             <button
@@ -451,7 +451,7 @@ function BudgetForm() {
             onClick={handleBack}
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
           >
-            {step === 1 ? 'Cancel' : 'Back'}
+            {step === 1 || isEditing ? 'Cancel' : 'Back'}
           </button>
         </div>
       </form>
