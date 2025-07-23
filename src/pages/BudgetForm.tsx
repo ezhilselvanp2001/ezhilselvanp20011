@@ -107,7 +107,6 @@ function BudgetForm() {
   };
 
   const onSubmit = async (data: FormData) => {
-    return;
     try {
       const categoryLimits: CategoryLimit[] = selectedCategories.map(categoryId => ({
         categoryId,
