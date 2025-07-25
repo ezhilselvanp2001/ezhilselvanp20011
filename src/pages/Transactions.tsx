@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Search, Edit, Trash2, ArrowUpDown, TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTransactions, useDeleteTransaction } from '../hooks/useTransactions';
 import { TransactionFilters, TRANSACTION_TYPES } from '../types/transaction';
+import { useFormatters } from '../hooks/useFormatters';
 import CategoryIcon from '../components/CategoryIcon';
 
 function Transactions() {
@@ -16,6 +17,7 @@ function Transactions() {
     search: searchTerm
   });
   const deleteTransaction = useDeleteTransaction();
+  const { formatCurrency, formatDateTime } = useFormatters();
 
   const handleDeleteTransaction = async (id: string, description: string) => {
     if (window.confirm(`Are you sure you want to delete "${description}" transaction?`)) {
@@ -31,19 +33,6 @@ function Transactions() {
     e.preventDefault();
     setCurrentPage(0);
     setFilters(prev => ({ ...prev, search: searchTerm }));
-  };
-
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
-  };
-
-  const formatDateTime = (date: string, time: any) => {
-    // const dateObj = new Date(date);
-    // const timeStr = `${(time?.hour ?? 0).toString().padStart(2, '0')}:${(time?.minute ?? 0).toString().padStart(2, '0')}`;
-    return {
-      date: "Date",
-      time: "timeStr"
-    };
   };
 
   const getTransactionIcon = (type: string) => {

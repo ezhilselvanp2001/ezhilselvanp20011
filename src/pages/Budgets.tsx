@@ -4,16 +4,14 @@ import { Plus, Edit, Target, ChevronRight } from 'lucide-react';
 import { useBudgetSummary } from '../hooks/useBudgets';
 import { Budget } from '../types/budget';
 import { MONTHS } from '../types/budget';
+import { useFormatters } from '../hooks/useFormatters';
 
 const tabs = ['Monthly', 'Yearly'];
 
 function Budgets() {
   const [activeTab, setActiveTab] = useState(0);
   const { data: summary, isLoading } = useBudgetSummary();
-
-  const formatCurrency = (amount: number) => {
-    return `$${amount}`;
-  };
+  const { formatCurrency } = useFormatters();
 
   const getProgressPercentage = (spent: number, budget: number) => {
     return budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;

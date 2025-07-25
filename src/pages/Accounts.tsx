@@ -10,6 +10,7 @@ import {
   useAccountSummary,
   useDeleteAccount
 } from '../hooks/useAccounts';
+import { useFormatters } from '../hooks/useFormatters';
 
 function Accounts() {
   const [showBalance, setShowBalance] = useState(false);
@@ -21,6 +22,7 @@ function Accounts() {
   const { data: cashAccounts = [], isLoading: cashLoading } = useCashAccounts();
   const { data: summary, isLoading: summaryLoading } = useAccountSummary();
   const deleteAccount = useDeleteAccount();
+  const { formatCurrency } = useFormatters();
 
   const handleDeleteAccount = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete "${name}" account?`)) {
@@ -32,8 +34,8 @@ function Accounts() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return showBalance ? `$${amount.toFixed(2)}` : '****';
+  const formatCurrencyWithVisibility = (amount: number) => {
+    return showBalance ? formatCurrency(amount) : '****';
   };
 
   const getAccountIcon = (type: string) => {
@@ -119,7 +121,7 @@ function Accounts() {
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-3 sm:mb-4">Available Balance</h3>
           <p className="text-xl sm:text-2xl font-bold text-gray-900">
-            {formatCurrency(summary?.availableAmount || 0)}
+            {formatCurrencyWithVisibility(summary?.availableAmount || 0)}
           </p>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">Total across all accounts</p>
         </div>
@@ -128,7 +130,7 @@ function Accounts() {
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-3 sm:mb-4">Available Credit</h3>
           <p className="text-xl sm:text-2xl font-bold text-green-600">
-            {formatCurrency(summary?.availableCredit || 0)}
+            {formatCurrencyWithVisibility(summary?.availableCredit || 0)}
           </p>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">Credit cards available limit</p>
         </div>

@@ -12,6 +12,7 @@ import {
 } from '../hooks/useDebts';
 import { DEBT_RECORD_TYPES } from '../types/debt';
 import DebtRecordTypeModal from '../components/DebtRecordTypeModal';
+import { useFormatters } from '../hooks/useFormatters';
 
 const tabs = ['All', 'Paid', 'Received', 'Adjustment'];
 
@@ -29,6 +30,7 @@ function DebtRecords() {
   const { data: adjustmentRecords, isLoading: adjustmentLoading } = useAdjustmentRecords(debtId || '', currentPage, pageSize);
   const { data: summary } = useDebtRecordSummary(debtId || '');
   const deleteRecord = useDeleteDebtRecord();
+  const { formatCurrency } = useFormatters();
 
   // Get current data based on active tab
   const getCurrentData = () => {
@@ -57,10 +59,6 @@ function DebtRecords() {
         console.error('Failed to delete record:', error);
       }
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
   };
 
   const formatDate = (dateString: string) => {

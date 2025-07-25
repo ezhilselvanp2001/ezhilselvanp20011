@@ -22,6 +22,7 @@ import {
 } from '../hooks/useDebts';
 import { DEBT_TYPES } from '../types/debt';
 import DebtTypeModal from '../components/DebtTypeModal';
+import { useFormatters } from '../hooks/useFormatters';
 
 const tabs = ['All', 'Lending', 'Borrowing'];
 
@@ -39,6 +40,7 @@ function Debts() {
   const { data: receivableDebts = [] } = useReceivableDebts();
 
   const deleteDebt = useDeleteDebt();
+  const { formatCurrency } = useFormatters();
 
   const totalPayable = payableDebts.reduce((sum, debt) => sum + (debt.remainingAmount || 0), 0);
   const totalReceivable = receivableDebts.reduce((sum, debt) => sum + (debt.remainingAmount || 0), 0);
@@ -72,8 +74,6 @@ function Debts() {
   const handleDebtTypeSelect = (type: '1' | '2') => {
     navigate('/debts/add', { state: { debtType: type } });
   };
-
-  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
 
   const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString();
 

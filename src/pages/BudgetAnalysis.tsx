@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
 import { useBudgetAnalysis } from '../hooks/useBudgets';
 import { MONTHS } from '../types/budget';
 import CategoryIcon from '../components/CategoryIcon';
+import { useFormatters } from '../hooks/useFormatters';
 
 function BudgetAnalysis() {
   const { budgetId } = useParams<{ budgetId: string }>();
@@ -11,10 +12,7 @@ function BudgetAnalysis() {
   const budgetType = searchParams.get('type') as 'monthly' | 'yearly' || 'monthly';
 
   const { data: budget, isLoading } = useBudgetAnalysis(budgetId || '', budgetType);
-
-  const formatCurrency = (amount: number) => {
-    return `$${amount.toFixed(2)}`;
-  };
+  const { formatCurrency } = useFormatters();
 
   const getProgressPercentage = (spent: number, budget: number) => {
     return budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
