@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import apiClient from '../lib/axios';
 import {  
   BudgetSummary,
@@ -29,6 +30,7 @@ export const useBudgetSummary = () => {
 
 // Get budget analysis
 export const useBudgetAnalysis = (budgetId: string, type: 'monthly' | 'yearly') => {
+  console.log('useBudgetAnalysis called with budgetId:', budgetId, 'and type:', type);
   return useQuery<BudgetAnalysis>({
     queryKey: ['budget-analysis', budgetId, type],
     queryFn: async () => {
@@ -44,6 +46,7 @@ export const useBudgetAnalysis = (budgetId: string, type: 'monthly' | 'yearly') 
 export const useCreateMonthlyBudget = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateMonthlyBudgetData) => {
@@ -52,7 +55,19 @@ export const useCreateMonthlyBudget = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-summary'] });
+      addToast({
+        type: 'success',
+        title: 'Monthly budget created',
+        message: 'Your monthly budget has been created successfully.',
+      });
       navigate('/budgets');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to create budget',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -60,6 +75,7 @@ export const useCreateMonthlyBudget = () => {
 export const useCreateYearlyBudget = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateYearlyBudgetData) => {
@@ -68,7 +84,19 @@ export const useCreateYearlyBudget = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-summary'] });
+      addToast({
+        type: 'success',
+        title: 'Yearly budget created',
+        message: 'Your yearly budget has been created successfully.',
+      });
       navigate('/budgets');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to create budget',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -77,6 +105,7 @@ export const useCreateYearlyBudget = () => {
 export const useUpdateMonthlyBudget = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateMonthlyBudgetData }) => {
@@ -86,7 +115,19 @@ export const useUpdateMonthlyBudget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-summary'] });
       queryClient.invalidateQueries({ queryKey: ['budget-analysis'] });
+      addToast({
+        type: 'success',
+        title: 'Budget updated',
+        message: 'Your monthly budget has been updated successfully.',
+      });
       navigate('/budgets');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update budget',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -94,6 +135,7 @@ export const useUpdateMonthlyBudget = () => {
 export const useUpdateYearlyBudget = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateYearlyBudgetData }) => {
@@ -103,7 +145,19 @@ export const useUpdateYearlyBudget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-summary'] });
       queryClient.invalidateQueries({ queryKey: ['budget-analysis'] });
+      addToast({
+        type: 'success',
+        title: 'Budget updated',
+        message: 'Your yearly budget has been updated successfully.',
+      });
       navigate('/budgets');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update budget',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -111,6 +165,7 @@ export const useUpdateYearlyBudget = () => {
 // Delete budget
 export const useDeleteBudget = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -119,6 +174,18 @@ export const useDeleteBudget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budget-summary'] });
       queryClient.invalidateQueries({ queryKey: ['budget-analysis'] });
+      addToast({
+        type: 'success',
+        title: 'Budget deleted',
+        message: 'The budget has been deleted successfully.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to delete budget',
+        message: 'Please try again.',
+      });
     },
   });
 };

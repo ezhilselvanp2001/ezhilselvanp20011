@@ -69,10 +69,9 @@ function Budgets() {
     return (
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div
-          className={`h-2 rounded-full transition-all duration-300 ${
-            percentage >= 90 ? 'bg-red-500' : 
+          className={`h-2 rounded-full transition-all duration-300 ${percentage >= 90 ? 'bg-red-500' :
             percentage >= 75 ? 'bg-yellow-500' : 'bg-green-500'
-          }`}
+            }`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
         />
       </div>
@@ -81,7 +80,7 @@ function Budgets() {
 
   const BudgetCard = ({ budget, isActive = false }: { budget: Budget; isActive?: boolean }) => {
     const percentage = getProgressPercentage(budget.totalSpent, budget.budget);
-    
+
     return (
       <Link
         to={`/budgets/analysis/${budget.id}?type=${activeTab === 0 ? 'monthly' : 'yearly'}`}
@@ -94,7 +93,7 @@ function Budgets() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-900">
-                {activeTab === 0 
+                {activeTab === 0
                   ? `${MONTHS[budget.month! - 1]} ${budget.year}`
                   : budget.year
                 }
@@ -102,10 +101,24 @@ function Budgets() {
               <p className="text-sm text-gray-500 capitalize">{budget.status} Budget</p>
             </div>
           </div>
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <div className="flex items-center space-x-3">
+            {isActive && (
+              <div className="ml-4 text-right">
+                <Link
+                  to={`/budgets/edit/${budget.id}?type=${budget.type}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center text-indigo-600 hover:text-indigo-700 text-sm"
+                >
+                  <Edit className="w-4 h-4 mr-1" />
+                  Edit
+                </Link>
+              </div>
+            )}
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          </div>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-center mb-4">
           {isActive ? (
             <CircularProgress percentage={percentage} size={80} />
           ) : (
@@ -113,16 +126,6 @@ function Budgets() {
               <LinearProgress percentage={percentage} />
             </div>
           )}
-          <div className="ml-4 text-right">
-            <Link
-              to={`/budgets/edit/${budget.id}?type=${budget.type}`}
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center text-indigo-600 hover:text-indigo-700 text-sm"
-            >
-              <Edit className="w-4 h-4 mr-1" />
-              Edit
-            </Link>
-          </div>
         </div>
 
         <div className="space-y-2">
@@ -137,10 +140,9 @@ function Budgets() {
           {isActive && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Available Balance:</span>
-              <span className={`font-medium ${
-                (budget.budget-budget.totalSpent) >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {formatCurrency((budget.budget-budget.totalSpent))}
+              <span className={`font-medium ${(budget.budget - budget.totalSpent) >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                {formatCurrency((budget.budget - budget.totalSpent))}
               </span>
             </div>
           )}
@@ -156,12 +158,12 @@ function Budgets() {
         No {status} {type.toLowerCase()} budgets
       </h3>
       <p className="text-gray-500 mb-4">
-        {status === 'active' 
+        {status === 'active'
           ? `Create your first ${type.toLowerCase()} budget to start tracking your expenses`
           : `You don't have any ${status} ${type.toLowerCase()} budgets yet`
         }
       </p>
-      {status === 'active' && (
+      {(status === 'active' || status === 'upcoming') && (
         <Link
           to="/budgets/add"
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
@@ -216,11 +218,10 @@ function Budgets() {
             <button
               key={tab}
               onClick={() => setActiveTab(index)}
-              className={`flex-1 text-xs sm:text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
-                active
-                  ? "bg-white shadow text-black"
-                  : "text-gray-500 hover:text-black"
-              }`}
+              className={`flex-1 text-xs sm:text-sm font-medium rounded-lg py-2 transition-all duration-200 ${active
+                ? "bg-white shadow text-black"
+                : "text-gray-500 hover:text-black"
+                }`}
             >
               {tab}
             </button>
@@ -244,10 +245,12 @@ function Budgets() {
       )}
 
       {/* Upcoming Budgets */}
-      <div className="mb-6 sm:mb-8">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Upcoming {budgetType} Budgets</h2>
-        <div className="bg-white rounded-lg shadow">
-          {currentData?.upcoming && currentData.upcoming.length > 0 ? (
+      {currentData?.upcoming && currentData?.upcoming?.length > 0 ? (
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
+            Upcoming {budgetType} Budgets
+          </h2>
+          <div className="bg-white rounded-lg shadow">
             <div className="divide-y divide-gray-200">
               {currentData.upcoming.map((budget) => (
                 <div key={budget.id} className="p-4 sm:p-6">
@@ -255,19 +258,27 @@ function Budgets() {
                 </div>
               ))}
             </div>
-          ) : (
+          </div>
+        </div>
+      ) : (currentData?.active && currentData?.active?.length > 0 && (
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
+            Upcoming {budgetType} Budgets
+          </h2>
+          <div className="bg-white rounded-lg shadow">
             <div className="p-4 sm:p-6">
               <EmptyState type={budgetType} status="upcoming" />
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      ))}
+
 
       {/* Past Budgets */}
-      <div>
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Past {budgetType} Budgets</h2>
-        <div className="bg-white rounded-lg shadow">
-          {currentData?.past && currentData.past.length > 0 ? (
+      {currentData?.past && currentData.past.length > 0 && (
+        <div>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Past {budgetType} Budgets</h2>
+          <div className="bg-white rounded-lg shadow">
             <div className="divide-y divide-gray-200">
               {currentData.past.map((budget) => (
                 <div key={budget.id} className="p-4 sm:p-6">
@@ -275,13 +286,9 @@ function Budgets() {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="p-4 sm:p-6">
-              <EmptyState type={budgetType} status="past" />
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import apiClient from '../lib/axios';
 import { 
   Transaction, 
@@ -57,6 +58,7 @@ export const useTransaction = (id: string) => {
 export const useCreateTransaction = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateTransactionData) => {
@@ -66,7 +68,19 @@ export const useCreateTransaction = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Transaction created',
+        message: 'Your transaction has been recorded successfully.',
+      });
       navigate('/transactions');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to create transaction',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -75,6 +89,7 @@ export const useCreateTransaction = () => {
 export const useUpdateTransaction = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateTransactionData }) => {
@@ -84,7 +99,19 @@ export const useUpdateTransaction = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Transaction updated',
+        message: 'Your transaction has been updated successfully.',
+      });
       navigate('/transactions');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update transaction',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -92,6 +119,7 @@ export const useUpdateTransaction = () => {
 // Delete transaction
 export const useDeleteTransaction = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -100,6 +128,18 @@ export const useDeleteTransaction = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Transaction deleted',
+        message: 'The transaction has been deleted successfully.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to delete transaction',
+        message: 'Please try again.',
+      });
     },
   });
 };

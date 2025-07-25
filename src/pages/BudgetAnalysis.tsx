@@ -26,7 +26,7 @@ function BudgetAnalysis() {
     return 'text-green-600';
   };
 
-  const CircularProgress = ({ percentage, size = 160 }: { percentage: number; size?: number }) => {
+  const CircularProgress = ({ percentage, size = 120 }: { percentage: number; size?: number }) => {
     const radius = (size - 16) / 2;
     const circumference = 2 * Math.PI * radius;
     const strokeDasharray = circumference;
@@ -40,7 +40,7 @@ function BudgetAnalysis() {
             cy={size / 2}
             r={radius}
             stroke="currentColor"
-            strokeWidth="16"
+            strokeWidth="8"
             fill="transparent"
             className="text-gray-200"
           />
@@ -49,7 +49,7 @@ function BudgetAnalysis() {
             cy={size / 2}
             r={radius}
             stroke="currentColor"
-            strokeWidth="16"
+            strokeWidth="8"
             fill="transparent"
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
@@ -59,10 +59,10 @@ function BudgetAnalysis() {
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <span className={`text-3xl font-bold ${getProgressColor(percentage)}`}>
+            <span className={`text-xl sm:text-2xl font-bold ${getProgressColor(percentage)}`}>
               {Math.round(percentage)}%
             </span>
-            <p className="text-sm text-gray-500 mt-1">Used</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Used</p>
           </div>
         </div>
       </div>
@@ -71,10 +71,10 @@ function BudgetAnalysis() {
 
   if (isLoading) {
     return (
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="h-64 bg-gray-200 rounded"></div>
             <div className="h-64 bg-gray-200 rounded"></div>
           </div>
@@ -90,7 +90,7 @@ function BudgetAnalysis() {
 
   if (!budget) {
     return (
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
         <div className="text-center py-12">
           <p className="text-gray-500">Budget not found</p>
           <Link to="/budgets" className="text-indigo-600 hover:text-indigo-700 mt-2 inline-block">
@@ -122,19 +122,19 @@ function BudgetAnalysis() {
   const COLORS = budget.categories.map(cat => `#${cat.color}`);
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto min-h-screen">
       <div className="mb-8">
         <Link
           to="/budgets"
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base"
         >
-          <ArrowLeft className="w-5 h-5 mr-2" />
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
           Back to Budgets
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Budget Analysis</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Budget Analysis</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               {budgetType === 'monthly' 
                 ? `${MONTHS[budget.month! - 1]} ${budget.year}`
                 : budget.year.toString()
@@ -143,33 +143,33 @@ function BudgetAnalysis() {
           </div>
           <Link
             to={`/budgets/edit/${budgetId}?type=${budgetType}`}
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            className="mt-3 sm:mt-0 inline-flex items-center px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm sm:text-base"
           >
-            <Edit className="w-5 h-5 mr-2" />
+            <Edit className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
             Edit Budget
           </Link>
         </div>
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Progress Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-center mb-6">
-            <CircularProgress percentage={percentage} />
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <div className="flex items-center justify-center mb-4 sm:mb-6">
+            <CircularProgress percentage={percentage} size={window.innerWidth < 640 ? 100 : 120} />
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600">Budget:</span>
-              <span className="font-semibold">{formatCurrency(budget.budget)}</span>
+              <span className="text-sm sm:text-base text-gray-600">Budget:</span>
+              <span className="text-sm sm:text-base font-semibold">{formatCurrency(budget.budget)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Total Spent:</span>
-              <span className="font-semibold">{formatCurrency(budget.totalSpent)}</span>
+              <span className="text-sm sm:text-base text-gray-600">Total Spent:</span>
+              <span className="text-sm sm:text-base font-semibold">{formatCurrency(budget.totalSpent)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Available Balance:</span>
-              <span className={`font-semibold ${
+              <span className="text-sm sm:text-base text-gray-600">Available Balance:</span>
+              <span className={`text-sm sm:text-base font-semibold ${
                 availableBalance >= 0 ? 'text-green-600' : 'text-red-600'
               }`}>
                 {formatCurrency(availableBalance)}
@@ -179,16 +179,16 @@ function BudgetAnalysis() {
         </div>
 
         {/* Spending Distribution */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Spending Distribution</h3>
-          <div className="h-64">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Spending Distribution</h3>
+          <div className="h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
+                  outerRadius={window.innerWidth < 640 ? 60 : 80}
                   fill="#8884d8"
                   dataKey="value"
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -205,9 +205,9 @@ function BudgetAnalysis() {
       </div>
 
       {/* Category Breakdown */}
-      <div className="bg-white rounded-lg shadow p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Category Breakdown</h3>
-        <div className="h-64 mb-6">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Category Breakdown</h3>
+        <div className="h-48 sm:h-64 mb-4 sm:mb-6">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -222,28 +222,28 @@ function BudgetAnalysis() {
       </div>
 
       {/* Included Categories */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Included Categories</h3>
-        <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Included Categories</h3>
+        <div className="space-y-3 sm:space-y-4">
           {budget.categories.map((category) => {
             const categoryPercentage = category.limit > 0 ? (category.spent / category.limit) * 100 : 0;
             return (
-              <div key={category.categoryId} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+              <div key={category.categoryId} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 border border-gray-200 rounded-lg">
                 <CategoryIcon icon={category.icon} color={category.color} />
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900">{category.name}</h4>
+                  <div className="flex items-center justify-between mb-1 sm:mb-2">
+                    <h4 className="text-sm sm:text-base font-medium text-gray-900">{category.name}</h4>
                     <div className="text-right">
-                      <p className="font-semibold">{formatCurrency(category.spent)}</p>
+                      <p className="text-sm sm:text-base font-semibold">{formatCurrency(category.spent)}</p>
                       {category.limit > 0 && (
-                        <p className="text-sm text-gray-500">of {formatCurrency(category.limit)}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">of {formatCurrency(category.limit)}</p>
                       )}
                     </div>
                   </div>
                   {category.limit > 0 && (
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
                       <div
-                        className={`h-2 rounded-full transition-all duration-300 ${
+                        className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
                           categoryPercentage >= 90 ? 'bg-red-500' : 
                           categoryPercentage >= 75 ? 'bg-yellow-500' : 'bg-green-500'
                         }`}
@@ -254,7 +254,7 @@ function BudgetAnalysis() {
                 </div>
                 {category.limit > 0 && (
                   <div className="text-right">
-                    <span className={`text-sm font-medium ${
+                    <span className={`text-xs sm:text-sm font-medium ${
                       categoryPercentage >= 90 ? 'text-red-600' : 
                       categoryPercentage >= 75 ? 'text-yellow-600' : 'text-green-600'
                     }`}>

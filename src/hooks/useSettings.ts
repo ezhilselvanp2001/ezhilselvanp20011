@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import apiClient from '../lib/axios';
 import { 
   UserSettings
@@ -20,6 +21,7 @@ export const useSettings = (enabled = true) => {
 // Update time format
 export const useUpdateTimeFormat = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (formatCode: number) => {
@@ -28,6 +30,18 @@ export const useUpdateTimeFormat = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
+      addToast({
+        type: 'success',
+        title: 'Time format updated',
+        message: 'Your time format preference has been saved.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update time format',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -35,6 +49,7 @@ export const useUpdateTimeFormat = () => {
 // Update decimal format
 export const useUpdateDecimalFormat = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (formatCode: number) => {
@@ -43,6 +58,18 @@ export const useUpdateDecimalFormat = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
+      addToast({
+        type: 'success',
+        title: 'Decimal format updated',
+        message: 'Your decimal format preference has been saved.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update decimal format',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -50,6 +77,7 @@ export const useUpdateDecimalFormat = () => {
 // Update number format
 export const useUpdateNumberFormat = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (formatCode: number) => {
@@ -58,6 +86,18 @@ export const useUpdateNumberFormat = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
+      addToast({
+        type: 'success',
+        title: 'Number format updated',
+        message: 'Your number format preference has been saved.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update number format',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -65,6 +105,7 @@ export const useUpdateNumberFormat = () => {
 // Update currency code
 export const useUpdateCurrencyCode = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (currencyCode: string) => {
@@ -73,6 +114,18 @@ export const useUpdateCurrencyCode = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
+      addToast({
+        type: 'success',
+        title: 'Currency updated',
+        message: 'Your currency preference has been saved.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update currency',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -80,6 +133,7 @@ export const useUpdateCurrencyCode = () => {
 // Update daily reminder
 export const useUpdateDailyReminder = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (dailyReminder: boolean) => {
@@ -88,6 +142,18 @@ export const useUpdateDailyReminder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
+      addToast({
+        type: 'success',
+        title: 'Daily reminder updated',
+        message: 'Your daily reminder preference has been saved.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update daily reminder',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -96,6 +162,7 @@ export const useUpdateDailyReminder = () => {
 export const useClearAllData = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async () => {
@@ -104,7 +171,19 @@ export const useClearAllData = () => {
     },
     onSuccess: () => {
       queryClient.clear();
+      addToast({
+        type: 'success',
+        title: 'Data cleared',
+        message: 'All your data has been cleared successfully.',
+      });
       navigate('/dashboard');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to clear data',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -113,6 +192,7 @@ export const useClearAllData = () => {
 export const useDeleteAccount = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async () => {
@@ -121,7 +201,19 @@ export const useDeleteAccount = () => {
     },
     onSuccess: () => {
       queryClient.clear();
+      addToast({
+        type: 'info',
+        title: 'Account deleted',
+        message: 'Your account has been deleted successfully.',
+      });
       navigate('/signin');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to delete account',
+        message: 'Please try again.',
+      });
     },
   });
 };

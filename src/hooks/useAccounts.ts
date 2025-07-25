@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import apiClient from '../lib/axios';
 import { 
   Account, 
@@ -115,6 +116,7 @@ export const useDefaultPaymentMode = () => {
 export const useCreateBankAccount = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateBankAccountData) => {
@@ -123,7 +125,19 @@ export const useCreateBankAccount = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Bank account created',
+        message: 'Your bank account has been added successfully.',
+      });
       navigate('/accounts');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to create account',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -131,6 +145,7 @@ export const useCreateBankAccount = () => {
 export const useCreateWallet = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateWalletData) => {
@@ -139,7 +154,19 @@ export const useCreateWallet = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Wallet created',
+        message: 'Your wallet has been added successfully.',
+      });
       navigate('/accounts');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to create wallet',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -147,6 +174,7 @@ export const useCreateWallet = () => {
 export const useCreateCreditCard = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateCreditCardData) => {
@@ -155,7 +183,19 @@ export const useCreateCreditCard = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Credit card added',
+        message: 'Your credit card has been added successfully.',
+      });
       navigate('/accounts');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to add credit card',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -164,6 +204,7 @@ export const useCreateCreditCard = () => {
 export const useUpdateBankAccount = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateBankAccountData }) => {
@@ -172,7 +213,19 @@ export const useUpdateBankAccount = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Account updated',
+        message: 'Your bank account has been updated successfully.',
+      });
       navigate('/accounts');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update account',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -180,6 +233,7 @@ export const useUpdateBankAccount = () => {
 export const useUpdateWallet = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateWalletData }) => {
@@ -188,7 +242,19 @@ export const useUpdateWallet = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Wallet updated',
+        message: 'Your wallet has been updated successfully.',
+      });
       navigate('/accounts');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update wallet',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -196,6 +262,7 @@ export const useUpdateWallet = () => {
 export const useUpdateCreditCard = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateCreditCardData }) => {
@@ -204,7 +271,19 @@ export const useUpdateCreditCard = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Credit card updated',
+        message: 'Your credit card has been updated successfully.',
+      });
       navigate('/accounts');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update credit card',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -212,6 +291,7 @@ export const useUpdateCreditCard = () => {
 // Delete account
 export const useDeleteAccount = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -219,6 +299,18 @@ export const useDeleteAccount = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      addToast({
+        type: 'success',
+        title: 'Account deleted',
+        message: 'The account has been deleted successfully.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to delete account',
+        message: 'Please try again.',
+      });
     },
   });
 };

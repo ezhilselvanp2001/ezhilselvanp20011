@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { 
-  useCreateMonthlyBudget, 
+import {
+  useCreateMonthlyBudget,
   useCreateYearlyBudget,
   useUpdateMonthlyBudget,
   useUpdateYearlyBudget,
@@ -31,7 +31,6 @@ function BudgetForm() {
   const [searchParams] = useSearchParams();
   const isEditing = Boolean(id);
   const budgetType = searchParams.get('type') as 'monthly' | 'yearly' || 'monthly';
-  
   const [activeTab, setActiveTab] = useState(budgetType === 'monthly' ? 0 : 1);
   const [step, setStep] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -65,11 +64,11 @@ function BudgetForm() {
       setValue('year', budgetData.year);
       if (budgetData.month) setValue('month', budgetData.month);
       setValue('totalLimit', budgetData.budget);
-      
+
       const categoryIds = budgetData.categories.map(cat => cat.categoryId);
       setSelectedCategories(categoryIds);
       setValue('selectedCategories', categoryIds);
-      
+
       const limits: { [key: string]: number } = {};
       budgetData.categories.forEach(cat => {
         limits[cat.categoryId] = cat.limit;
@@ -87,7 +86,7 @@ function BudgetForm() {
   const handleCategorySelection = (categoryIds: string[]) => {
     setSelectedCategories(categoryIds);
     setValue('selectedCategories', categoryIds);
-    
+
     // Reset category limits for unselected categories
     const currentLimits = watchedValues.categoryLimits || {};
     const newLimits: { [key: string]: number } = {};
@@ -157,7 +156,7 @@ function BudgetForm() {
   };
 
   const isPending = createMonthlyBudget.isPending || createYearlyBudget.isPending ||
-                   updateMonthlyBudget.isPending || updateYearlyBudget.isPending;
+    updateMonthlyBudget.isPending || updateYearlyBudget.isPending;
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
@@ -173,10 +172,10 @@ function BudgetForm() {
           {isEditing ? 'Edit Budget' : step === 1 ? 'Create Budget' : 'Set Category Limits'}
         </h1>
         <p className="text-gray-600 mt-1">
-          {isEditing 
-            ? 'Update budget details' 
-            : step === 1 
-              ? 'Set up your budget parameters' 
+          {isEditing
+            ? 'Update budget details'
+            : step === 1
+              ? 'Set up your budget parameters'
               : 'Optionally set limits for individual categories'
           }
         </p>
@@ -186,17 +185,14 @@ function BudgetForm() {
       {!isEditing && (
         <div className="mb-8">
           <div className="flex items-center">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              step >= 1 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'
-            }`}>
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step >= 1 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
               1
             </div>
-            <div className={`flex-1 h-1 mx-4 ${
-              step >= 2 ? 'bg-indigo-600' : 'bg-gray-200'
-            }`}></div>
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              step >= 2 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'
-            }`}>
+            <div className={`flex-1 h-1 mx-4 ${step >= 2 ? 'bg-indigo-600' : 'bg-gray-200'
+              }`}></div>
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step >= 2 ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
               2
             </div>
           </div>
@@ -207,7 +203,7 @@ function BudgetForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form className="space-y-6">
         {/* Step 1: Budget Details */}
         {(step === 1 || isEditing) && (
           <>
@@ -225,11 +221,10 @@ function BudgetForm() {
                         key={tab}
                         type="button"
                         onClick={() => setActiveTab(index)}
-                        className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
-                          active
-                            ? "bg-white shadow text-black"
-                            : "text-gray-500 hover:text-black"
-                        }`}
+                        className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${active
+                          ? "bg-white shadow text-black"
+                          : "text-gray-500 hover:text-black"
+                          }`}
                       >
                         {tab}
                       </button>
@@ -271,7 +266,7 @@ function BudgetForm() {
                     Year
                   </label>
                   <input
-                    {...register('year', { 
+                    {...register('year', {
                       required: 'Year is required',
                       min: { value: 2020, message: 'Year must be 2020 or later' },
                       max: { value: 2030, message: 'Year must be 2030 or earlier' }
@@ -318,8 +313,8 @@ function BudgetForm() {
                     Included Categories
                   </label>
                   <p className="text-sm text-gray-500 mt-1">
-                    {selectedCategories.length === categories.length 
-                      ? 'All categories' 
+                    {selectedCategories.length === categories.length
+                      ? 'All categories'
                       : `${selectedCategories.length} categories included in your budget`
                     }
                   </p>
@@ -417,29 +412,30 @@ function BudgetForm() {
         )}
 
         {/* Error Messages */}
-        {(createMonthlyBudget.error || createYearlyBudget.error || 
+        {(createMonthlyBudget.error || createYearlyBudget.error ||
           updateMonthlyBudget.error || updateYearlyBudget.error) && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="text-sm text-red-600">
-              Failed to save budget. Please try again.
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <div className="text-sm text-red-600">
+                Failed to save budget. Please try again.
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
           {step === 1 ? (
             <button
               type="button"
-              onClick={handleNext}
-              disabled={selectedCategories.length === 0 || !watchedValues.totalLimit || watchedValues.totalLimit <= 0}
+              onClick={isEditing ?handleSubmit(onSubmit):handleNext}
+              disabled={isPending || selectedCategories.length === 0 || !watchedValues.totalLimit || watchedValues.totalLimit <= 0}
               className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEditing ? 'Update Budget' : 'Next: Set Category Limits'}
+              {isPending ? 'Saving...' : isEditing ? 'Update Budget' :'Next: Set Category Limits'}
             </button>
           ) : (
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit(onSubmit)}
               disabled={isPending}
               className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
             >
@@ -461,7 +457,7 @@ function BudgetForm() {
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         categories={categories}
-        onSelect={() => {}} // Not used in this context
+        onSelect={() => { }} // Not used in this context
         title="Select Categories for Budget"
         multiSelect={true}
         selectedCategories={selectedCategories}

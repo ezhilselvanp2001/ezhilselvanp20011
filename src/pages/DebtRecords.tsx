@@ -91,7 +91,7 @@ function DebtRecords() {
 
   if (!debtId) {
     return (
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
         <div className="text-center py-12">
           <p className="text-gray-500">Debt ID not found</p>
           <Link to="/debts" className="text-indigo-600 hover:text-indigo-700 mt-2 inline-block">
@@ -104,10 +104,10 @@ function DebtRecords() {
 
   if (isLoading) {
     return (
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[1, 2].map((i) => (
               <div key={i} className="h-24 bg-gray-200 rounded"></div>
             ))}
@@ -123,86 +123,86 @@ function DebtRecords() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto min-h-screen">
       <div className="mb-8">
         <Link
           to="/debts"
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base"
         >
-          <ArrowLeft className="w-5 h-5 mr-2" />
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
           Back to Debts
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Records</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Records</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               {debt ? `Debt with ${debt.personName}` : 'Debt records'}
             </p>
           </div>
           <button
             onClick={() => setIsRecordTypeModalOpen(true)}
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            className="mt-3 sm:mt-0 inline-flex items-center px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm sm:text-base"
           >
-            <Plus className="w-5 h-5 mr-2" />
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
             Add Record
           </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
         {debt?.type === '2' ? (
           // Borrowing - show Total Payable
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Payable</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Total Payable</p>
+                <p className="text-xl sm:text-2xl font-bold text-red-600">
                   {formatCurrency(debt?.remainingAmount || 0)}
                 </p>
               </div>
-              <div className="bg-red-100 rounded-full p-3">
-                <TrendingDown className="h-6 w-6 text-red-600" />
+              <div className="bg-red-100 rounded-full p-2 sm:p-3">
+                <TrendingDown className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
               </div>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Amount you owe</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Amount you owe</p>
           </div>
         ) : (
           // Lending - show Total Receivable
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Receivable</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">Total Receivable</p>
+                <p className="text-xl sm:text-2xl font-bold text-green-600">
                   {formatCurrency(debt?.remainingAmount || 0)}
                 </p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <TrendingUp className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 rounded-full p-2 sm:p-3">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
               </div>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Amount owed to you</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Amount owed to you</p>
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Paid</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Total Paid</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">
                 {formatCurrency(summary?.totalPaid || 0)}
               </p>
             </div>
-            <div className="bg-blue-100 rounded-full p-3">
-              <DollarSign className="h-6 w-6 text-blue-600" />
+            <div className="bg-blue-100 rounded-full p-2 sm:p-3">
+              <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Total transactions</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">Total transactions</p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+      <div className="flex bg-gray-100 rounded-lg p-1 mb-4 sm:mb-6">
         {tabs.map((tab, index) => {
           const active = activeTab === index;
           return (
@@ -212,7 +212,7 @@ function DebtRecords() {
                 setActiveTab(index);
                 setCurrentPage(0);
               }}
-              className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
+              className={`flex-1 text-xs sm:text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
                 active
                   ? "bg-white shadow text-black"
                   : "text-gray-500 hover:text-black"
@@ -226,26 +226,26 @@ function DebtRecords() {
 
       {/* Records List */}
       <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">
             {tabs[activeTab]} Records ({totalElements})
           </h2>
         </div>
 
         {records.length === 0 ? (
-          <div className="p-8 text-center">
-            <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="p-6 sm:p-8 text-center">
+            <DollarSign className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
               No {tabs[activeTab].toLowerCase()} records yet
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-sm sm:text-base text-gray-500 mb-3 sm:mb-4">
               Start tracking by adding your first record
             </p>
             <button
               onClick={() => setIsRecordTypeModalOpen(true)}
-              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm sm:text-base"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
               Add Record
             </button>
           </div>
@@ -253,54 +253,54 @@ function DebtRecords() {
           <>
             <div className="divide-y divide-gray-200">
               {records.map((record) => (
-                <div key={record.id} className="p-4 sm:p-6 flex items-center justify-between">
-                  <div className="flex items-center space-x-4 flex-1 min-w-0">
+                <div key={record.id} className="p-3 sm:p-4 lg:p-6 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4">
+                  <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
                     <div className="flex-shrink-0">
                       {getRecordTypeIcon(record.type)}
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <p className="font-medium text-gray-900 truncate">
+                      <div className="flex items-center space-x-1 sm:space-x-2 mb-1">
+                        <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
                           {record.description}
                         </p>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium flex-shrink-0 ${
                           record.type === '1' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
                         }`}>
                           {DEBT_RECORD_TYPES[record.type]}
                         </span>
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm text-gray-500">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 lg:space-x-4 text-xs sm:text-sm text-gray-500">
                         <span>{formatDate(record.date)}</span>
                         {record.account && (
-                          <span className="hidden sm:inline">• {record.account.name}</span>
+                          <span className="hidden lg:inline truncate">• {record.account.name}</span>
                         )}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
                     <div className="text-right">
-                      <p className={`font-semibold ${getRecordTypeColor(record.type)}`}>
+                      <p className={`text-sm sm:text-base font-semibold ${getRecordTypeColor(record.type)}`}>
                         {record.type === '1' ? '-' : '+'}
                         {formatCurrency(record.amount)}
                       </p>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 sm:space-x-2">
                       <Link
                         to={`/debts/${debtId}/records/edit/${record.id}`}
-                        className="p-2 text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-gray-50"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-gray-50"
                       >
-                        <Edit className="w-5 h-5" />
+                        <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
                       </Link>
                       <button
                         onClick={() => handleDeleteRecord(record.id, record.description)}
                         disabled={deleteRecord.isPending}
-                        className="p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                     </div>
                   </div>
@@ -310,31 +310,31 @@ function DebtRecords() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="p-6 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
+              <div className="p-4 sm:p-6 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                  <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
                     Showing {currentPage * pageSize + 1} to {Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} records
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2">
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
                       disabled={currentPage === 0}
-                      className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     
-                    <span className="px-3 py-2 text-sm font-medium">
+                    <span className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium">
                       Page {currentPage + 1} of {totalPages}
                     </span>
                     
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
                       disabled={currentPage >= totalPages - 1}
-                      className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 </div>

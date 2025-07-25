@@ -21,14 +21,14 @@ const categoryData = [
 
 function Dashboard() {
   return (
-    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto min-h-screen">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-sm sm:text-base text-gray-600 mt-1">Track your expenses and financial goals</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -95,10 +95,10 @@ function Dashboard() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Monthly Spending vs Budget</h3>
-          <div className="h-48 sm:h-64 lg:h-80">
+          <div className="h-48 sm:h-64 md:h-72 lg:h-80">
             <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -114,7 +114,7 @@ function Dashboard() {
 
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Spending by Category</h3>
-          <div className="h-48 sm:h-64 lg:h-80">
+          <div className="h-48 sm:h-64 md:h-72 lg:h-80">
             <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -152,7 +152,7 @@ function Dashboard() {
               { id: 4, description: 'Netflix', category: 'Entertainment', amount: -15.99, date: '2025-01-12' },
               { id: 5, description: 'Amazon', category: 'Shopping', amount: -129.99, date: '2025-01-11' },
             ].map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between py-2 sm:py-3 border-b border-gray-100 last:border-b-0 gap-3 sm:gap-4">
+              <div key={transaction.id} className="flex items-center justify-between py-2 sm:py-3 border-b border-gray-100 last:border-b-0 gap-2 sm:gap-3 lg:gap-4">
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     transaction.amount > 0 ? 'bg-green-100' : 'bg-red-100'
@@ -165,7 +165,7 @@ function Dashboard() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm sm:text-base font-medium text-gray-900 truncate">{transaction.description}</p>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">{transaction.category}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate block sm:hidden lg:block">{transaction.category}</p>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
@@ -174,7 +174,7 @@ function Dashboard() {
                   }`}>
                     {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{transaction.date}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 hidden md:block">{transaction.date}</p>
                 </div>
               </div>
             ))}

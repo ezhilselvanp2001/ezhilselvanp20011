@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import apiClient from '../lib/axios';
 import { Category, CreateCategoryData, UpdateCategoryData } from '../types/category';
 
@@ -55,6 +56,7 @@ export const useDefaultCategory = (type: number) => {
 export const useCreateCategory = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateCategoryData) => {
@@ -63,7 +65,19 @@ export const useCreateCategory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      addToast({
+        type: 'success',
+        title: 'Category created',
+        message: 'Your category has been created successfully.',
+      });
       navigate('/categories');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to create category',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -72,6 +86,7 @@ export const useCreateCategory = () => {
 export const useUpdateCategory = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateCategoryData }) => {
@@ -80,7 +95,19 @@ export const useUpdateCategory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      addToast({
+        type: 'success',
+        title: 'Category updated',
+        message: 'Your category has been updated successfully.',
+      });
       navigate('/categories');
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to update category',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -88,6 +115,7 @@ export const useUpdateCategory = () => {
 // Delete category
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -95,6 +123,18 @@ export const useDeleteCategory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      addToast({
+        type: 'success',
+        title: 'Category deleted',
+        message: 'The category has been deleted successfully.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to delete category',
+        message: 'Please try again.',
+      });
     },
   });
 };
@@ -102,6 +142,7 @@ export const useDeleteCategory = () => {
 // Set default category
 export const useSetDefaultCategory = () => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   return useMutation({
     mutationFn: async ({ id, type }: { id: string; type: number }) => {
@@ -112,6 +153,18 @@ export const useSetDefaultCategory = () => {
     onSuccess: (_, { type }) => {
       queryClient.invalidateQueries({ 
         queryKey: ['categories', type === 1 ? 'expense-default' : 'income-default'] 
+      });
+      addToast({
+        type: 'success',
+        title: 'Default category updated',
+        message: 'Your default category has been set successfully.',
+      });
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        title: 'Failed to set default category',
+        message: 'Please try again.',
       });
     },
   });
