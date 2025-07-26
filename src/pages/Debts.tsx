@@ -21,6 +21,7 @@ import {
 } from '../hooks/useDebts';
 import { DEBT_TYPES } from '../types/debt';
 import DebtTypeModal from '../components/DebtTypeModal';
+import { useFormatters } from '../hooks/useFormatters';
 
 const tabs = ['All', 'Lending', 'Borrowing'];
 
