@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { TrendingUp, TrendingDown, BarChart3, Calendar } from 'lucide-react';
+import { useFormatters } from '../hooks/useFormatters';
 
 const trendData = [
   { month: 'Jan', spending: 2400, income: 5200 },
@@ -21,6 +22,8 @@ const dailySpending = [
 ];
 
 function Analysis() {
+  const { formatCurrency } = useFormatters();
+
   return (
     <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto min-h-screen">
       <div className="mb-8">
@@ -34,7 +37,7 @@ function Analysis() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs sm:text-sm font-medium text-gray-600">Average Monthly Spending</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">$2,683</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{formatCurrency(2683)}</p>
             </div>
             <div className="bg-blue-100 rounded-full p-2 sm:p-3">
               <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
@@ -57,7 +60,7 @@ function Analysis() {
             </div>
           </div>
           <div className="mt-3 sm:mt-4 flex items-center">
-            <span className="text-xs sm:text-sm text-red-600">$220</span>
+            <span className="text-xs sm:text-sm text-red-600">{formatCurrency(220)}</span>
             <span className="text-xs sm:text-sm text-gray-600 ml-2">average</span>
           </div>
         </div>

@@ -11,7 +11,8 @@ import {
   UpdateDebtRecordData,
   PaginatedDebts,
   PaginatedDebtRecords,
-  DebtRecordSummary
+  DebtRecordSummary,
+  DebtSummary
 } from '../types/debt';
 
 // Debt hooks
@@ -76,6 +77,16 @@ export const useBorrowingDebts = (page = 0, size = 10) => {
         first: true,
         last: true
       };
+    },
+  });
+};
+
+export const useDebtSummary = () => {
+  return useQuery<DebtSummary>({
+    queryKey: ['debts', 'summary'],
+    queryFn: async () => {
+      const response = await apiClient.get('/debts/summary');
+      return response.data.data;
     },
   });
 };

@@ -71,44 +71,46 @@ export default function ToastItem({ toast }: ToastItemProps) {
   return (
     <div
       className={`
-        transform transition-all duration-300 ease-in-out
-        ${isVisible && !isLeaving 
-          ? 'translate-x-0 opacity-100' 
+      transform transition-all duration-300 ease-in-out
+      ${isVisible && !isLeaving
+          ? 'translate-x-0 opacity-100'
           : 'translate-x-full opacity-0'
         }
-        ${getBackgroundColor()}
-        border rounded-lg shadow-lg p-4 max-w-sm w-full
-      `}
+      ${getBackgroundColor()}
+      border rounded-lg shadow-lg
+      p-1 sm:p-1 md:p-2
+      w-full
+    `}
     >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
-          {getIcon()}
-        </div>
-        
+      <div className="flex items-start space-x-2 sm:space-x-2">
+        <div className="flex-shrink-0 pt-3">{getIcon()}</div>
+
         <div className="flex-1 min-w-0">
-          <h4 className={`text-sm font-medium ${getTextColor()}`}>
+          <h4 className={`text-sm sm:text-base font-medium ${getTextColor()}`}>
             {toast.title}
           </h4>
+
           {toast.message && (
-            <p className={`text-sm mt-1 ${getTextColor()} opacity-90`}>
+            <p className={`text-sm sm:text-base mt-1 ${getTextColor()} opacity-90`}>
               {toast.message}
             </p>
           )}
+
           {toast.action && (
             <button
               onClick={toast.action.onClick}
-              className={`text-sm font-medium mt-2 hover:underline ${getTextColor()}`}
+              className={`text-sm sm:text-base font-medium mt-2 hover:underline ${getTextColor()}`}
             >
               {toast.action.label}
             </button>
           )}
         </div>
-        
+
         <button
           onClick={handleRemove}
           className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3 h-3 sm:w-4 sm:h-4" />
         </button>
       </div>
     </div>

@@ -32,7 +32,7 @@ export interface CreateDebtData {
   dueDate: string;
   additionalDetail: string;
   type: '1' | '2';
-  request: {
+  record: {
     date: string;
     amount: number;
     description: string;

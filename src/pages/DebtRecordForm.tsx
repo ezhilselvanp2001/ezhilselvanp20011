@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useCreateDebtRecord, useUpdateDebtRecord, useDebtRecord } from '../hooks/useDebts';
-import { useAccounts } from '../hooks/useAccounts';
+import { useAccounts, useDefaultPaymentMode } from '../hooks/useAccounts';
 import { CreateDebtRecordData } from '../types/debt';
 import AccountSelectModal from '../components/AccountSelectModal';
 
@@ -28,18 +28,19 @@ function DebtRecordForm() {
   const { data: accounts = [] } = useAccounts();
   const createRecord = useCreateDebtRecord();
   const updateRecord = useUpdateDebtRecord();
-
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
+  const { data: defaultPaymentMode } = useDefaultPaymentMode();
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       date: new Date().toISOString().split('T')[0],
       amount: 0,
       description: '',
-      accountId: '',
+      accountId: defaultPaymentMode?.id,
       type: recordType || '1'
     }
   });
 
-  const selectedAccount = null;
+  const watchedValues = watch();
+  const selectedAccount = accounts.find(acc => acc.id === watchedValues.accountId);
   // accounts.find(acc => acc.id === watch('accountId'));
 
   // Load existing record data for editing
@@ -68,7 +69,7 @@ function DebtRecordForm() {
       } else if (debtId) {
         await createRecord.mutateAsync({ debtId, data: recordData });
       }
-      
+
       navigate(`/debts/${debtId}/records`);
     } catch (error) {
       console.error('Failed to save record:', error);
@@ -124,22 +125,20 @@ function DebtRecordForm() {
               <button
                 type="button"
                 onClick={() => setValue('type', '1')}
-                className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
-                  register('type').value === '1' || recordType === '1'
+                className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${register('type').value === '1' || recordType === '1'
                     ? "bg-white shadow text-black"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 Money Paid
               </button>
               <button
                 type="button"
                 onClick={() => setValue('type', '2')}
-                className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
-                  register('type').value === '2' || recordType === '2'
+                className={`flex-1 text-sm font-medium rounded-lg py-2 transition-all duration-200 ${register('type').value === '2' || recordType === '2'
                     ? "bg-white shadow text-black"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 Money Received
               </button>
@@ -235,7 +234,7 @@ function DebtRecordForm() {
               No account selected
             </div>
           )}
-          
+
           {errors.accountId && (
             <p className="mt-1 text-sm text-red-600">{errors.accountId.message}</p>
           )}

@@ -3,8 +3,9 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useCreateDebt, useUpdateDebt, useDebt } from '../hooks/useDebts';
-import { useAccounts } from '../hooks/useAccounts';
+import { useAccounts, useDefaultPaymentMode } from '../hooks/useAccounts';
 import { CreateDebtData } from '../types/debt';
+import AccountSelectModal from '../components/AccountSelectModal';
 
 interface FormData {
   personName: string;
@@ -24,6 +25,7 @@ function DebtForm() {
   const location = useLocation();
   const isEditing = Boolean(id);
   const [step, setStep] = useState(1);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   const debtType = location.state?.debtType as '1' | '2' | undefined;
 
@@ -31,7 +33,7 @@ function DebtForm() {
   const { data: accounts = [] } = useAccounts();
   const createDebt = useCreateDebt();
   const updateDebt = useUpdateDebt();
-
+  const { data: defaultPaymentMode } = useDefaultPaymentMode();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       personName: '',
@@ -41,13 +43,14 @@ function DebtForm() {
       date: new Date().toISOString().split('T')[0],
       amount: 0,
       description: '',
-      accountId: '',
+      accountId: defaultPaymentMode?.id,
       recordType: debtType || '1'
     }
   });
 
   const watchedType = watch('type');
-  const selectedAccount = null;
+  const watchedValues = watch();
+  const selectedAccount = accounts.find(acc => acc.id === watchedValues.accountId);
   // Load existing debt data for editing
   useEffect(() => {
     if (isEditing && debt) {
@@ -66,7 +69,7 @@ function DebtForm() {
         dueDate: data.dueDate,
         additionalDetail: data.additionalDetail,
         type: data.type,
-        request: {
+        record: {
           date: data.date,
           amount: data.amount,
           description: data.description,
@@ -316,23 +319,23 @@ function DebtForm() {
 
               {/* Account */}
               <div className="mt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Account
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setIsAccountModalOpen(true)}
-                      className="text-indigo-600 hover:text-indigo-700 text-sm flex items-center"
-                    >
-                      <Edit className="w-4 h-4 mr-1" />
-                      Change
-                    </button>
-                  </div>
+                <div className="flex items-center justify-between mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Account
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsAccountModalOpen(true)}
+                    className="text-indigo-600 hover:text-indigo-700 text-sm flex items-center"
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Change
+                  </button>
+                </div>
 
-                  {selectedAccount ? (
-                    <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      {/* <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                {selectedAccount ? (
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    {/* <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                         <span className="text-blue-600 font-medium">
                           {selectedAccount.name.charAt(0).toUpperCase()}
                         </span>
@@ -341,16 +344,16 @@ function DebtForm() {
                         <p className="font-medium text-gray-900">{selectedAccount.name}</p>
                         <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
                       </div> */}
-                    </div>
-                  ) : (
-                    <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
-                      No account selected
-                    </div>
-                  )}
+                  </div>
+                ) : (
+                  <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
+                    No account selected
+                  </div>
+                )}
 
-                  {errors.accountId && (
-                    <p className="mt-1 text-sm text-red-600">{errors.accountId.message}</p>
-                  )}
+                {errors.accountId && (
+                  <p className="mt-1 text-sm text-red-600">{errors.accountId.message}</p>
+                )}
 
 
                 {/* <label htmlFor="accountId" className="block text-sm font-medium text-gray-700 mb-2">
@@ -413,6 +416,14 @@ function DebtForm() {
           </button>
         </div>
       </form>
+      <AccountSelectModal
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+        accounts={accounts}
+        onSelect={(account) => setValue('accountId', account.id)}
+        selectedAccount={selectedAccount}
+        title="Select Account"
+      />
     </div>
   );
 }

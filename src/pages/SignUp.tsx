@@ -30,10 +30,10 @@ function SignUp() {
         <div className="flex justify-center">
           <div className="flex items-center space-x-2">
             <Link to="/" className="flex items-center space-x-1">
-              <span className="text-xl sm:text-2xl font-extrabold text-indigo-600">Expense</span>
-              <span className="text-xl sm:text-2xl font-bold text-gray-900">Trace</span>
+              <span className="text-xl sm:text-2xl font-extrabold text-indigo-600">Expense
+                <span className="text-lg sm:text-xl font-bold text-gray-900">Trace</span>
+              </span>
             </Link>
-
           </div>
         </div>
         <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-bold text-gray-900">

@@ -16,12 +16,12 @@ import {
   useDebts,
   useLendingDebts,
   useBorrowingDebts,
-  usePayableDebts,
-  useReceivableDebts,
   useDeleteDebt,
+  useDebtSummary,
 } from '../hooks/useDebts';
 import { DEBT_TYPES } from '../types/debt';
 import DebtTypeModal from '../components/DebtTypeModal';
+import { useFormatters } from '../hooks/useFormatters';
 
 const tabs = ['All', 'Lending', 'Borrowing'];
 
@@ -35,13 +35,9 @@ function Debts() {
   const { data: allDebts, isLoading: allLoading } = useDebts(currentPage, pageSize);
   const { data: lendingDebts, isLoading: lendingLoading } = useLendingDebts(currentPage, pageSize);
   const { data: borrowingDebts, isLoading: borrowingLoading } = useBorrowingDebts(currentPage, pageSize);
-  const { data: payableDebts = [] } = usePayableDebts();
-  const { data: receivableDebts = [] } = useReceivableDebts();
-
+  const { data: summary } = useDebtSummary();
   const deleteDebt = useDeleteDebt();
-
-  const totalPayable = payableDebts.reduce((sum, debt) => sum + (debt.remainingAmount || 0), 0);
-  const totalReceivable = receivableDebts.reduce((sum, debt) => sum + (debt.remainingAmount || 0), 0);
+  const { formatCurrency } = useFormatters();
 
   const getCurrentData = () => {
     switch (activeTab) {
@@ -72,8 +68,6 @@ function Debts() {
   const handleDebtTypeSelect = (type: '1' | '2') => {
     navigate('/debts/add', { state: { debtType: type } });
   };
-
-  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
 
   const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString();
 
@@ -134,7 +128,7 @@ function Debts() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Payable</p>
-              <p className="text-2xl font-bold text-red-600">{formatCurrency(totalPayable)}</p>
+              <p className="text-2xl font-bold text-red-600">{formatCurrency(summary?.totalPayable ?? 0)}</p>
             </div>
             <div className="bg-red-100 rounded-full p-3">
               <TrendingDown className="h-6 w-6 text-red-600" />
@@ -147,7 +141,7 @@ function Debts() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Receivable</p>
-              <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceivable)}</p>
+              <p className="text-2xl font-bold text-green-600">{formatCurrency(summary?.totalReceivable ?? 0)}</p>
             </div>
             <div className="bg-green-100 rounded-full p-3">
               <TrendingUp className="h-6 w-6 text-green-600" />
@@ -167,9 +161,8 @@ function Debts() {
                 setActiveTab(index);
                 setCurrentPage(0);
               }}
-              className={`flex-1 text-xs sm:text-sm font-medium rounded-lg py-2 transition-all duration-200 ${
-                active ? "bg-white shadow text-black" : "text-gray-500 hover:text-black"
-              }`}
+              className={`flex-1 text-xs sm:text-sm font-medium rounded-lg py-2 transition-all duration-200 ${active ? "bg-white shadow text-black" : "text-gray-500 hover:text-black"
+                }`}
             >
               {tab}
             </button>

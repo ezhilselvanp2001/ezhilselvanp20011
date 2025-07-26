@@ -37,6 +37,8 @@ export interface Transaction {
 export interface CreateTransactionData {
   type: '1' | '2' | '3';
   date: number;
+  month: number;
+  year: number;
   time: {
     hour: number;
     minute: number;
@@ -89,7 +91,7 @@ export interface PaginatedTransactions {
 
 export const TRANSACTION_TYPES = {
   '1': 'Expense',
-  '2': 'Income', 
+  '2': 'Income',
   '3': 'Transfer'
 } as const;
 

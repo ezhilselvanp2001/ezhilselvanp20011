@@ -12,13 +12,13 @@ export default function PrivateLayout() {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
-        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3">
+        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
               className="p-1.5 sm:p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
             >
-              <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+              <Menu className="h-4 w-3 sm:h-6 sm:w-6" />
             </button>
             <div className="flex items-center space-x-1">
               <span className="text-lg sm:text-2xl font-extrabold text-indigo-600">Expense

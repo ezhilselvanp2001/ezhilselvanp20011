@@ -82,9 +82,8 @@ function TransactionForm() {
     if (isEditing && transaction) {
       const transactionType = transaction.type;
       setActiveTab(transactionType === '1' ? 0 : transactionType === '2' ? 1 : 2);
-
       setValue('type', transactionType);
-      setValue('date', transaction.date);
+      // setValue('date', '12-10-2020');
       // setValue('time', `${transaction.time.hour.toString().padStart(2, '0')}:${transaction.time.minute.toString().padStart(2, '0')}`);
       setValue('amount', transaction.amount);
       setValue('categoryId', transaction.categoryId || '');
@@ -122,11 +121,14 @@ function TransactionForm() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      const [year, month, day] = data.date.split("-").map(Number);
       const [hours, minutes] = data.time.split(':').map(Number);
 
       const transactionData: CreateTransactionData = {
         type: data.type,
-        date: 10,
+        date: day,
+        month: month,
+        year: year,
         time: {
           hour: hours,
           minute: minutes,
@@ -138,7 +140,7 @@ function TransactionForm() {
         accountId: data.accountId,
         toAccountId: data.type === '3' ? data.toAccountId : undefined,
         description: data.description,
-        tagIds:[]
+        tagIds: []
       };
 
       if (isEditing && id) {

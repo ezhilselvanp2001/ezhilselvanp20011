@@ -46,7 +46,6 @@ export const useDefaultCategory = (type: number) => {
     queryFn: async () => {
       const endpoint = type === 1 ? '/categories/expense-default' : '/categories/income-default';
       const response = await apiClient.get(endpoint);
-      console.log("response.data : ",response.data.data);
       return response.data.data;
     },
   });
