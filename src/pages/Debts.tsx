@@ -21,8 +21,6 @@ import {
 } from '../hooks/useDebts';
 import { DEBT_TYPES } from '../types/debt';
 import DebtTypeModal from '../components/DebtTypeModal';
-import { useFormatters } from '../hooks/useFormatters';
-import { useFormatters } from '../hooks/useFormatters';
 
 const tabs = ['All', 'Lending', 'Borrowing'];
 
@@ -39,9 +37,6 @@ function Debts() {
   const { data: summary } = useDebtSummary();
   const deleteDebt = useDeleteDebt();
   const { formatCurrency } = useFormatters();
-
-  const totalPayable = payableDebts.reduce((sum, debt) => sum + (debt.remainingAmount || 0), 0);
-  const totalReceivable = receivableDebts.reduce((sum, debt) => sum + (debt.remainingAmount || 0), 0);
 
   const getCurrentData = () => {
     switch (activeTab) {
