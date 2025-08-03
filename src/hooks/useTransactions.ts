@@ -60,8 +60,28 @@ export const useCreateTransaction = () => {
   const { addToast } = useToast();
 
   return useMutation({
-    mutationFn: async (data: CreateTransactionData) => {
-      const response = await apiClient.post('/transactions', data);
+    mutationFn: async (data: CreateTransactionData & { transactionType: 'expense' | 'income' | 'transfer' }) => {
+      const { transactionType, ...transactionData } = data;
+      let endpoint = '/transactions/expense';
+      
+      if (transactionType === 'income') {
+        endpoint = '/transactions/income';
+      } else if (transactionType === 'transfer') {
+        endpoint = '/transactions/transfer';
+        // For transfer, map accountId to fromAccountId
+        const transferData = {
+          ...transactionData,
+          fromAccountId: transactionData.accountId,
+          fromPaymentModeId: transactionData.paymentModeId,
+        };
+        delete transferData.accountId;
+        delete transferData.paymentModeId;
+        delete transferData.categoryId;
+        const response = await apiClient.post(endpoint, transferData);
+        return response.data;
+      }
+      
+      const response = await apiClient.post(endpoint, transactionData);
       return response.data;
     },
     onSuccess: () => {
@@ -91,8 +111,31 @@ export const useUpdateTransaction = () => {
   const { addToast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: UpdateTransactionData }) => {
-      const response = await apiClient.put(`/transactions/${id}`, data);
+    mutationFn: async ({ id, data, transactionType }: { 
+      id: string; 
+      data: UpdateTransactionData; 
+      transactionType: 'expense' | 'income' | 'transfer' 
+    }) => {
+      let endpoint = `/transactions/expense/${id}`;
+      
+      if (transactionType === 'income') {
+        endpoint = `/transactions/income/${id}`;
+      } else if (transactionType === 'transfer') {
+        endpoint = `/transactions/transfer/${id}`;
+        // For transfer, map accountId to fromAccountId
+        const transferData = {
+          ...data,
+          fromAccountId: data.accountId,
+          fromPaymentModeId: data.paymentModeId,
+        };
+        delete transferData.accountId;
+        delete transferData.paymentModeId;
+        delete transferData.categoryId;
+        const response = await apiClient.put(endpoint, transferData);
+        return response.data;
+      }
+      
+      const response = await apiClient.put(endpoint, data);
       return response.data;
     },
     onSuccess: () => {

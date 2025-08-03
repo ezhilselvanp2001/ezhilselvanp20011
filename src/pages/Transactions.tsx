@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Edit, Trash2, ArrowUpDown, TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, ArrowUpDown, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, CreditCard, Smartphone, FileText, Globe, Building2, Wallet, Banknote } from 'lucide-react';
 import { useTransactions, useDeleteTransaction } from '../hooks/useTransactions';
 import { TransactionFilters, TRANSACTION_TYPES } from '../types/transaction';
 import { useFormatters } from '../hooks/useFormatters';
@@ -61,6 +61,36 @@ function Transactions() {
         return 'text-blue-600';
       default:
         return 'text-gray-600';
+    }
+  };
+
+  const getAccountIcon = (type: number) => {
+    switch (type) {
+      case 1: // Bank
+        return <Building2 className="w-4 h-4 text-blue-600" />;
+      case 2: // Wallet
+        return <Wallet className="w-4 h-4 text-green-600" />;
+      case 3: // Credit Card
+        return <CreditCard className="w-4 h-4 text-purple-600" />;
+      case 4: // Cash
+        return <Banknote className="w-4 h-4 text-yellow-600" />;
+      default:
+        return <Building2 className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getPaymentModeIcon = (type: number) => {
+    switch (type) {
+      case 1:
+        return <CreditCard className="w-3 h-3 text-purple-600" />;
+      case 2:
+        return <Smartphone className="w-3 h-3 text-blue-600" />;
+      case 3:
+        return <FileText className="w-3 h-3 text-gray-600" />;
+      case 4:
+        return <Globe className="w-3 h-3 text-green-600" />;
+      default:
+        return <CreditCard className="w-3 h-3 text-gray-600" />;
     }
   };
 
@@ -175,16 +205,35 @@ function Transactions() {
                           </span>
                         </div>
                         
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 lg:space-x-4 text-xs sm:text-sm text-gray-500">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 lg:space-x-3 text-xs sm:text-sm text-gray-500">
                           <span>{date} at {time}</span>
                           {transaction.category && (
-                            <span className="hidden sm:inline truncate">• {transaction.category.name}</span>
+                            <span className="hidden sm:inline truncate flex items-center">
+                              • {transaction.category.name}
+                            </span>
                           )}
                           {transaction.account && (
-                            <span className="hidden lg:inline truncate">• {transaction.account.name}</span>
+                            <span className="hidden md:inline truncate flex items-center">
+                              • {getAccountIcon(transaction.account.type)} 
+                              <span className="ml-1">{transaction.account.name}</span>
+                            </span>
+                          )}
+                          {transaction.paymentMode && (
+                            <span className="hidden lg:inline truncate flex items-center">
+                              • {getPaymentModeIcon(transaction.paymentMode.type)} 
+                              <span className="ml-1">{transaction.paymentMode.name}</span>
+                            </span>
                           )}
                           {transaction.type === 3 && transaction.toAccount && (
-                            <span className="hidden lg:inline truncate">→ {transaction.toAccount.name}</span>
+                            <span className="hidden lg:inline truncate flex items-center">
+                              → {getAccountIcon(transaction.toAccount.type)} 
+                              <span className="ml-1">{transaction.toAccount.name}</span>
+                            </span>
+                          )}
+                          {transaction.tags && transaction.tags.length > 0 && (
+                            <span className="hidden xl:inline truncate">
+                              • Tags: {transaction.tags.map(tag => tag.name).join(', ')}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -222,28 +271,28 @@ function Transactions() {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="p-4 sm:p-6 border-t border-gray-200">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="text-xs sm:text-sm text-gray-700 text-center sm:text-left">
                     Showing {currentPage * pageSize + 1} to {Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} transactions
                   </div>
                   
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center justify-center space-x-1 sm:space-x-2">
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
                       disabled={currentPage === 0}
-                      className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     
-                    <span className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium">
+                    <span className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium bg-gray-50 rounded-md">
                       Page {currentPage + 1} of {totalPages}
                     </span>
                     
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
                       disabled={currentPage >= totalPages - 1}
-                      className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-1.5 sm:p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>

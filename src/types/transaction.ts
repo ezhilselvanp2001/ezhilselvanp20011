@@ -14,8 +14,11 @@ export interface Transaction {
   categoryId?: string;
   accountId: string;
   toAccountId?: string; // For transfers
+  paymentModeId?: string;
+  fromPaymentModeId?: string; // For transfers
+  toPaymentModeId?: string; // For transfers
   description: string;
-  tagIds?: string[];
+  tags?: string[];
   category?: {
     id: string;
     name: string;
@@ -31,6 +34,11 @@ export interface Transaction {
     id: string;
     name: string;
     type: string;
+  };
+  paymentMode?: {
+    id: string;
+    name: string;
+    type: number;
   };
   createdAt: string;
   updatedAt: string;
@@ -51,8 +59,10 @@ export interface CreateTransactionData {
   categoryId?: string;
   accountId: string;
   toAccountId?: string;
+  paymentModeId?: string;
+  fromPaymentModeId?: string;
+  toPaymentModeId?: string;
   description: string;
-  tagIds?: string[];
   tags?: string[];
 }
 
@@ -69,8 +79,11 @@ export interface UpdateTransactionData {
   categoryId?: string;
   accountId?: string;
   toAccountId?: string;
+  paymentModeId?: string;
+  fromPaymentModeId?: string;
+  toPaymentModeId?: string;
   description?: string;
-  tagIds?: string[];
+  tags?: string[];
 }
 
 export interface TransactionFilters {

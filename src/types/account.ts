@@ -15,7 +15,7 @@ export interface Account {
 export interface PaymentMode {
   id: string;
   name: string;
-  type: 1 | 2 | 3 | 4; // 1=Debit Card, 2=UPI, 3=Cheque, 4=Internet Banking
+  type: 1 | 2 | 3 | 4; // 1=UPI, 2=Debit Card, 3=Cheque, 4=Internet Banking
   accountId: string;
   createdAt: string;
   updatedAt: string;
@@ -89,8 +89,8 @@ export interface DefaultPaymentMode {
 }
 
 export const PAYMENT_MODE_TYPES = {
-  '1': 'Debit Card',
-  '2': 'UPI',
+  '1': 'UPI',
+  '2': 'Debit Card',
   '3': 'Cheque',
   '4': 'Internet Banking'
 } as const;

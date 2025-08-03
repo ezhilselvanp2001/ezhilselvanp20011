@@ -31,6 +31,9 @@ interface FormData {
   categoryId?: string;
   accountId: string;
   toAccountId?: string;
+  paymentModeId?: string;
+  fromPaymentModeId?: string;
+  toPaymentModeId?: string;
   description: string;
   tags: string[];
 }
@@ -46,6 +49,7 @@ function TransactionForm() {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [isToAccountModalOpen, setIsToAccountModalOpen] = useState(false);
+  const [isFromAccountModalOpen, setIsFromAccountModalOpen] = useState(false);
 
   const { data: transaction, isLoading: transactionLoading } = useTransaction(id || '');
   const createTransaction = useCreateTransaction();
@@ -67,6 +71,9 @@ function TransactionForm() {
       categoryId: '',
       accountId: '',
       toAccountId: '',
+      paymentModeId: '',
+      fromPaymentModeId: '',
+      toPaymentModeId: '',
       description: '',
       tags: []
     }
@@ -76,6 +83,9 @@ function TransactionForm() {
   const selectedCategory = categories.find(cat => cat.id === watchedValues.categoryId);
   const selectedAccount = accounts.find(acc => acc.id === watchedValues.accountId);
   const selectedToAccount = accounts.find(acc => acc.id === watchedValues.toAccountId);
+  const selectedPaymentMode = selectedAccount?.linkedPaymentModes?.find(pm => pm.id === watchedValues.paymentModeId);
+  const selectedFromPaymentMode = selectedAccount?.linkedPaymentModes?.find(pm => pm.id === watchedValues.fromPaymentModeId);
+  const selectedToPaymentMode = selectedToAccount?.linkedPaymentModes?.find(pm => pm.id === watchedValues.toPaymentModeId);
 
   // Load existing transaction data for editing
   useEffect(() => {
@@ -90,7 +100,9 @@ function TransactionForm() {
       setValue('categoryId', transaction.categoryId || '');
       setValue('accountId', transaction.accountId);
       setValue('toAccountId', transaction.toAccountId || '');
+      setValue('paymentModeId', transaction.paymentMode?.id || '');
       setValue('description', transaction.description);
+      setValue('tags', transaction.tags?.map(tag => tag.name) || []);
     }
   }, [isEditing, transaction, setValue]);
 
@@ -140,14 +152,25 @@ function TransactionForm() {
         categoryId: data.type === 3 ? undefined : data.categoryId,
         accountId: data.accountId,
         toAccountId: data.type === 3 ? data.toAccountId : undefined,
+        paymentModeId: data.type === 3 ? data.fromPaymentModeId : data.paymentModeId,
+        toPaymentModeId: data.type === 3 ? data.toPaymentModeId : undefined,
         description: data.description,
         tags: data.tags
       };
 
+      const transactionType = data.type === 1 ? 'expense' : data.type === 2 ? 'income' : 'transfer';
+
       if (isEditing && id) {
-        await updateTransaction.mutateAsync({ id, data: transactionData });
+        await updateTransaction.mutateAsync({ 
+          id, 
+          data: transactionData, 
+          transactionType 
+        });
       } else {
-        await createTransaction.mutateAsync(transactionData);
+        await createTransaction.mutateAsync({ 
+          ...transactionData, 
+          transactionType 
+        });
       }
     } catch (error) {
       console.error('Failed to save transaction:', error);
@@ -332,7 +355,7 @@ function TransactionForm() {
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              {activeTab === 2 ? 'From Account' : 'Account'}
+              Account
             </label>
             <button
               type="button"
@@ -345,16 +368,53 @@ function TransactionForm() {
           </div>
 
           {selectedAccount ? (
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-medium">
-                  {selectedAccount.name.charAt(0).toUpperCase()}
-                </span>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-medium">
+                    {selectedAccount.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">{selectedAccount.name}</p>
+                  <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-gray-900">{selectedAccount.name}</p>
-                <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
-              </div>
+              
+              {/* Payment Mode for non-transfer transactions */}
+              {activeTab !== 2 && selectedAccount.linkedPaymentModes && selectedAccount.linkedPaymentModes.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Payment Mode (Optional)
+                  </label>
+                  {selectedPaymentMode ? (
+                    <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                      <div className="p-2 rounded-lg bg-blue-100">
+                        {/* Payment mode icon would go here */}
+                        <span className="text-blue-600 text-sm font-medium">PM</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{selectedPaymentMode.name}</p>
+                        <p className="text-sm text-gray-500">{selectedPaymentMode.type}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      {selectedAccount.linkedPaymentModes.map((paymentMode) => (
+                        <button
+                          key={paymentMode.id}
+                          type="button"
+                          onClick={() => setValue('paymentModeId', paymentMode.id)}
+                          className="p-2 text-left border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors"
+                        >
+                          <p className="text-sm font-medium text-gray-900">{paymentMode.name}</p>
+                          <p className="text-xs text-gray-500">{paymentMode.type}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
@@ -365,38 +425,132 @@ function TransactionForm() {
 
         {/* To Account (for Transfer) */}
         {activeTab === 2 && (
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                To Account
-              </label>
-              <button
-                type="button"
-                onClick={() => setIsToAccountModalOpen(true)}
-                className="text-indigo-600 hover:text-indigo-700 text-sm flex items-center"
-              >
-                <Edit className="w-4 h-4 mr-1" />
-                Change
-              </button>
+          <div className="space-y-6">
+            {/* From Account for Transfer */}
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  From Account
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsFromAccountModalOpen(true)}
+                  className="text-indigo-600 hover:text-indigo-700 text-sm flex items-center"
+                >
+                  <Edit className="w-4 h-4 mr-1" />
+                  Change
+                </button>
+              </div>
+
+              {selectedAccount ? (
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                      <span className="text-red-600 font-medium">
+                        {selectedAccount.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{selectedAccount.name}</p>
+                      <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
+                    </div>
+                  </div>
+                  
+                  {/* From Payment Mode */}
+                  {selectedAccount.linkedPaymentModes && selectedAccount.linkedPaymentModes.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        From Payment Mode (Optional)
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {selectedAccount.linkedPaymentModes.map((paymentMode) => (
+                          <button
+                            key={paymentMode.id}
+                            type="button"
+                            onClick={() => setValue('fromPaymentModeId', paymentMode.id)}
+                            className={`p-2 text-left border rounded-lg transition-colors ${
+                              watchedValues.fromPaymentModeId === paymentMode.id
+                                ? 'border-indigo-500 bg-indigo-50'
+                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            <p className="text-sm font-medium text-gray-900">{paymentMode.name}</p>
+                            <p className="text-xs text-gray-500">{paymentMode.type}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
+                  No account selected
+                </div>
+              )}
             </div>
 
-            {selectedToAccount ? (
-              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-600 font-medium">
-                    {selectedToAccount.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">{selectedToAccount.name}</p>
-                  <p className="text-sm text-gray-500 capitalize">{selectedToAccount.type.replace('-', ' ')}</p>
-                </div>
+            {/* To Account for Transfer */}
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  To Account
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsToAccountModalOpen(true)}
+                  className="text-indigo-600 hover:text-indigo-700 text-sm flex items-center"
+                >
+                  <Edit className="w-4 h-4 mr-1" />
+                  Change
+                </button>
               </div>
-            ) : (
-              <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
-                No account selected
-              </div>
-            )}
+
+              {selectedToAccount ? (
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-green-600 font-medium">
+                        {selectedToAccount.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{selectedToAccount.name}</p>
+                      <p className="text-sm text-gray-500 capitalize">{selectedToAccount.type}</p>
+                    </div>
+                  </div>
+                  
+                  {/* To Payment Mode */}
+                  {selectedToAccount.linkedPaymentModes && selectedToAccount.linkedPaymentModes.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        To Payment Mode (Optional)
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {selectedToAccount.linkedPaymentModes.map((paymentMode) => (
+                          <button
+                            key={paymentMode.id}
+                            type="button"
+                            onClick={() => setValue('toPaymentModeId', paymentMode.id)}
+                            className={`p-2 text-left border rounded-lg transition-colors ${
+                              watchedValues.toPaymentModeId === paymentMode.id
+                                ? 'border-indigo-500 bg-indigo-50'
+                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            <p className="text-sm font-medium text-gray-900">{paymentMode.name}</p>
+                            <p className="text-xs text-gray-500">{paymentMode.type}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
+                  No account selected
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -536,19 +690,47 @@ function TransactionForm() {
         isOpen={isAccountModalOpen}
         onClose={() => setIsAccountModalOpen(false)}
         accounts={accounts}
-        onSelect={(account) => setValue('accountId', account.id)}
+        onSelect={(account) => {
+          setValue('accountId', account.id);
+          // Clear payment mode when account changes
+          setValue('paymentModeId', '');
+        }}
+        onPaymentModeSelect={(paymentModeId) => setValue('paymentModeId', paymentModeId)}
         selectedAccount={selectedAccount}
+        selectedPaymentModeId={watchedValues.paymentModeId}
         title="Select Account"
+        showPaymentModes={activeTab !== 2}
+      />
+
+      <AccountSelectModal
+        isOpen={isFromAccountModalOpen}
+        onClose={() => setIsFromAccountModalOpen(false)}
+        accounts={accounts}
+        onSelect={(account) => {
+          setValue('accountId', account.id);
+          setValue('fromPaymentModeId', '');
+        }}
+        onPaymentModeSelect={(paymentModeId) => setValue('fromPaymentModeId', paymentModeId)}
+        selectedAccount={selectedAccount}
+        selectedPaymentModeId={watchedValues.fromPaymentModeId}
+        title="Select From Account"
+        showPaymentModes={true}
       />
 
       <AccountSelectModal
         isOpen={isToAccountModalOpen}
         onClose={() => setIsToAccountModalOpen(false)}
         accounts={accounts}
-        onSelect={(account) => setValue('toAccountId', account.id)}
+        onSelect={(account) => {
+          setValue('toAccountId', account.id);
+          setValue('toPaymentModeId', '');
+        }}
+        onPaymentModeSelect={(paymentModeId) => setValue('toPaymentModeId', paymentModeId)}
         selectedAccount={selectedToAccount}
+        selectedPaymentModeId={watchedValues.toPaymentModeId}
         title="Select Destination Account"
         excludeAccountId={watchedValues.accountId}
+        showPaymentModes={true}
       />
     </div>
   );

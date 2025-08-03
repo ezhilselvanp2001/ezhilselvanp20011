@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Calendar, TrendingUp, TrendingDown, ArrowUpDown, Edit, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, TrendingUp, TrendingDown, ArrowUpDown, Edit, Trash2, Building2, Wallet, CreditCard, Banknote, Smartphone, FileText, Globe } from 'lucide-react';
 import { useDaySummary } from '../../hooks/useSummary';
 import { useDeleteTransaction } from '../../hooks/useTransactions';
 import { useFormatters } from '../../hooks/useFormatters';
@@ -84,6 +84,36 @@ function DayView() {
         return 'text-blue-600';
       default:
         return 'text-gray-600';
+    }
+  };
+
+  const getAccountIcon = (type: number) => {
+    switch (type) {
+      case 1: // Bank
+        return <Building2 className="w-4 h-4 text-blue-600" />;
+      case 2: // Wallet
+        return <Wallet className="w-4 h-4 text-green-600" />;
+      case 3: // Credit Card
+        return <CreditCard className="w-4 h-4 text-purple-600" />;
+      case 4: // Cash
+        return <Banknote className="w-4 h-4 text-yellow-600" />;
+      default:
+        return <Building2 className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getPaymentModeIcon = (type: number) => {
+    switch (type) {
+      case 1:
+        return <Smartphone className="w-3 h-3 text-blue-600" />;
+      case 2:
+        return <CreditCard className="w-3 h-3 text-purple-600" />;
+      case 3:
+        return <FileText className="w-3 h-3 text-gray-600" />;
+      case 4:
+        return <Globe className="w-3 h-3 text-green-600" />;
+      default:
+        return <CreditCard className="w-3 h-3 text-gray-600" />;
     }
   };
 
@@ -265,6 +295,18 @@ function DayView() {
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 lg:space-x-4 text-xs sm:text-sm text-gray-500">
                       <span>Transaction ID: {transaction.id.slice(0, 8)}...</span>
+                      {transaction.account && (
+                        <span className="hidden sm:inline flex items-center">
+                          • {getAccountIcon(transaction.account.type)} 
+                          <span className="ml-1">{transaction.account.name}</span>
+                        </span>
+                      )}
+                      {transaction.paymentMode && (
+                        <span className="hidden md:inline flex items-center">
+                          • {getPaymentModeIcon(transaction.paymentMode.type)} 
+                          <span className="ml-1">{transaction.paymentMode.name}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
