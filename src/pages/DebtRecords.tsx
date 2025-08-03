@@ -13,6 +13,7 @@ import {
 import { DEBT_RECORD_TYPES } from '../types/debt';
 import DebtRecordTypeModal from '../components/DebtRecordTypeModal';
 import { useFormatters } from '../hooks/useFormatters';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const tabs = ['All', 'Paid', 'Received', 'Adjustment'];
 
@@ -22,6 +23,7 @@ function DebtRecords() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
   const [isRecordTypeModalOpen, setIsRecordTypeModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState<{ id: string; description: string } | null>(null);
 
   const { data: debt } = useDebt(debtId || '');
   const { data: allRecords, isLoading: allLoading } = useDebtRecords(debtId || '', currentPage, pageSize);
@@ -51,10 +53,11 @@ function DebtRecords() {
   const totalPages = currentData?.totalPages || 0;
   const totalElements = currentData?.totalElements || 0;
 
-  const handleDeleteRecord = async (id: string, description: string) => {
-    if (window.confirm(`Are you sure you want to delete "${description}" record?`)) {
+  const handleDeleteRecord = async () => {
+    if (recordToDelete) {
       try {
-        await deleteRecord.mutateAsync(id);
+        await deleteRecord.mutateAsync(recordToDelete.id);
+        setRecordToDelete(null);
       } catch (error) {
         console.error('Failed to delete record:', error);
       }
@@ -294,7 +297,7 @@ function DebtRecords() {
                         <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteRecord(record.id, record.description)}
+                        onClick={() => setRecordToDelete({ id: record.id, description: record.description })}
                         disabled={deleteRecord.isPending}
                         className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
                       >
@@ -347,6 +350,18 @@ function DebtRecords() {
         isOpen={isRecordTypeModalOpen}
         onClose={() => setIsRecordTypeModalOpen(false)}
         debtId={debtId}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!recordToDelete}
+        onClose={() => setRecordToDelete(null)}
+        onConfirm={handleDeleteRecord}
+        title="Delete Record"
+        message={`Are you sure you want to delete "${recordToDelete?.description}" record? This action cannot be undone.`}
+        confirmText="Delete Record"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        isPending={deleteRecord.isPending}
       />
     </div>
   );

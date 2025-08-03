@@ -1,7 +1,7 @@
 export interface Account {
   id: string;
   name: string;
-  type: 'bank' | 'wallet' | 'credit-card' | 'cash';
+  type: 1 | 2 | 3 | 4;
   currentBalance?: number;
   currentAvailableLimit?: number;
   totalCreditLimit?: number;
@@ -15,7 +15,7 @@ export interface Account {
 export interface PaymentMode {
   id: string;
   name: string;
-  type: '1' | '2' | '3' | '4'; // 1=Debit Card, 2=UPI, 3=Cheque, 4=Internet Banking
+  type: 1 | 2 | 3 | 4; // 1=Debit Card, 2=UPI, 3=Cheque, 4=Internet Banking
   accountId: string;
   createdAt: string;
   updatedAt: string;
@@ -26,7 +26,7 @@ export interface CreateBankAccountData {
   currentBalance: number;
   linkedPaymentModes?: {
     name: string;
-    type: '1' | '2' | '3' | '4';
+    type: 1 | 2 | 3 | 4;
   }[];
 }
 
@@ -48,7 +48,7 @@ export interface UpdateBankAccountData {
   currentBalance?: number;
   linkedPaymentModes?: {
     name: string;
-    type: '1' | '2' | '3' | '4';
+    type: 1 | 2 | 3 | 4;
   }[];
 }
 
@@ -67,12 +67,12 @@ export interface UpdateCreditCardData {
 
 export interface CreatePaymentModeData {
   name: string;
-  type: '1' | '2' | '3' | '4';
+  type: 1 | 2 | 3 | 4;
 }
 
 export interface UpdatePaymentModeData {
   name?: string;
-  type?: '1' | '2' | '3' | '4';
+  type?: 1 | 2 | 3 | 4;
 }
 
 export interface AccountSummary {

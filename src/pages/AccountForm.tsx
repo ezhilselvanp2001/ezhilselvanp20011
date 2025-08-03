@@ -64,7 +64,7 @@ function AccountForm() {
     if (isEditing && account) {
       setValue('name', account.name);
       
-      if (account.type === 'bank') {
+      if (account.type === 1) {
         setActiveTab(0);
         setValue('currentBalance', account.currentBalance || 0);
         if (account.linkedPaymentModes) {
@@ -73,10 +73,10 @@ function AccountForm() {
             type: pm.type
           })));
         }
-      } else if (account.type === 'wallet') {
+      } else if (account.type === 2) {
         setActiveTab(1);
         setValue('currentBalance', account.currentBalance || 0);
-      } else if (account.type === 'credit-card') {
+      } else if (account.type === 3) {
         setActiveTab(2);
         setValue('currentAvailableLimit', account.currentAvailableLimit || 0);
         setValue('totalCreditLimit', account.totalCreditLimit || 0);

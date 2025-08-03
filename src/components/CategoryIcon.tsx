@@ -1,4 +1,4 @@
-import { Apple, Car, ShoppingBag, Banana, Bus, ShoppingBasket, Carrot, Plane, CreditCard, Coffee, Train, DollarSign, Fish, CarTaxiFront as Taxi, Receipt, Utensils, QrCode, MapPin, Cookie, Compass, Backpack, Wine, Briefcase as Suitcase, Map, Salad, Ticket, Sandwich, Egg, Milk, Clock, Settings, HelpCircle, Gift, Puzzle, StickyNote, Calendar, Droplets, Flame, Wifi, Phone, Trash2, Wrench, Lightbulb, Zap, Briefcase, BarChart3, Users, FileText, CheckCircle2, Building2, Wallet, Banknote, PiggyBank, TrendingUp, HandCoins, Stethoscope, Pill, Syringe, HeartPulse, Thermometer, Clapperboard, Gamepad2, Music, Music2, Camera, Theater, Tv, PartyPopper, Home, User, Heart } from 'lucide-react';
+import { Apple, Car, ShoppingBag, Banana, Bus, ShoppingBasket, Carrot, Plane, CreditCard, Coffee, Train, DollarSign, Fish, CarTaxiFront as Taxi, Receipt, Utensils, QrCode, MapPin, Cookie, Compass, Backpack, Wine, Briefcase as Suitcase, Map, Salad, Ticket, Sandwich, Egg, Milk, Clock, Settings, HelpCircle, Gift, Puzzle, StickyNote, Calendar, Droplets, Flame, Wifi, Phone, Trash2, Wrench, Lightbulb, Zap, Briefcase, BarChart3, Users, FileText, CheckCircle2, Building2, Wallet, Banknote, PiggyBank, TrendingUp, HandCoins, Stethoscope, Pill, Syringe, HeartPulse, Thermometer, Clapperboard, Gamepad2, Music, Music2, Camera, Theater, Tv, PartyPopper, Home, User, Heart, Pizza, IceCream, Beef, Ship, Bike, ShoppingCart, Tag, LucideIcon, MoreHorizontal } from 'lucide-react';
 import { colorMap } from '../types/category';
 
 // Icon mapping - using closest Lucide icons for the specified names
@@ -15,6 +15,10 @@ const iconMap: Record<string, LucideIcon> = {
   'egg': Egg,
   'fish': Fish,
   'cookie': Cookie,
+  'pizza': Pizza,
+  'ice-cream': IceCream,
+  'steak': Beef,
+
 
   // Travel icons 
   'airplane': Plane,
@@ -28,6 +32,9 @@ const iconMap: Record<string, LucideIcon> = {
   'suitcase': Suitcase,
   'backpack': Backpack,
 
+  'ship': Ship,
+  'bike': Bike,
+
   // Shopping icons
   'shopping-bag': ShoppingBag,
   'shopping-basket': ShoppingBasket,
@@ -35,6 +42,9 @@ const iconMap: Record<string, LucideIcon> = {
   'money-bill': DollarSign,
   'barcode': Receipt,
   'qrcode': QrCode,
+
+  'cart': ShoppingCart,
+  'tag': Tag,
 
   // Family icons
   'family': Users,
@@ -95,6 +105,7 @@ const iconMap: Record<string, LucideIcon> = {
   'tools': Settings,
   'clock': Clock,
   'location': MapPin,
+  'others': MoreHorizontal
 };
 
 

@@ -1,35 +1,33 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useSignup } from '../hooks/useAuth';
+import { Link, Navigate } from 'react-router-dom';
+import { useResetPassword } from '../hooks/usePasswordReset';
+import { usePasswordReset } from '../contexts/PasswordResetContext';
 import { validatePassword } from '../utils/passwordValidation';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 
-function SignUp() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
+function ResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const signup = useSignup();
+  const { email, otpVerified } = usePasswordReset();
+  const resetPassword = useResetPassword();
+
+  // Redirect if OTP not verified
+  if (!otpVerified) {
+    return <Navigate to="/verify-otp" replace />;
+  }
 
   const passwordValidation = validatePassword(password);
   const passwordsMatch = password === confirmPassword;
+  const canSubmit = passwordValidation.isValid && passwordsMatch && password.length > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!passwordValidation.isValid) {
-      return;
+    if (canSubmit) {
+      resetPassword.mutate({ email, newPassword: password });
     }
-
-    if (!passwordsMatch) {
-      return;
-    }
-
-    signup.mutate({ firstName, lastName, email, password });
   };
 
   return (
@@ -45,81 +43,20 @@ function SignUp() {
           </div>
         </div>
         <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-bold text-gray-900">
-          Create your account
+          Reset your password
         </h2>
         <p className="mt-2 text-center text-sm sm:text-base text-gray-600">
-          Or{' '}
-          <Link
-            to="/signin"
-            className="font-medium text-indigo-600 hover:text-indigo-500 text-sm sm:text-base"
-          >
-            sign in to your existing account
-          </Link>
+          Enter a new password for <span className="font-medium">{email}</span>
         </p>
       </div>
 
       <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-6 sm:py-8 px-4 sm:px-6 lg:px-10 shadow sm:rounded-lg">
           <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm sm:text-base font-medium text-gray-700">
-                  First name
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    required
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className="block text-sm sm:text-base font-medium text-gray-700">
-                  Last name
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    required
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm sm:text-base font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
-                />
-              </div>
-            </div>
-
+            {/* New Password */}
             <div>
               <label htmlFor="password" className="block text-sm sm:text-base font-medium text-gray-700">
-                Password
+                New Password
               </label>
               <div className="mt-1 relative">
                 <input
@@ -131,6 +68,7 @@ function SignUp() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+                  placeholder="Enter your new password"
                 />
                 <button
                   type="button"
@@ -144,14 +82,43 @@ function SignUp() {
                   )}
                 </button>
               </div>
+              
+              {/* Password Strength Indicator */}
+              <PasswordStrengthIndicator password={password} />
+              
+              {/* Password Requirements */}
+              {password && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Password requirements:</p>
+                  <div className="space-y-1">
+                    {[
+                      { test: password.length >= 8, text: 'At least 8 characters' },
+                      { test: /[A-Z]/.test(password), text: 'One uppercase letter' },
+                      { test: /[a-z]/.test(password), text: 'One lowercase letter' },
+                      { test: /\d/.test(password), text: 'One number' },
+                      { test: /[!@#$%^&*()_+\-=\[\]{}|;':",.<>?]/.test(password), text: 'One special character' },
+                      { test: !/\s/.test(password), text: 'No spaces' }
+                    ].map((requirement, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        {requirement.test ? (
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-gray-300" />
+                        )}
+                        <span className={`text-sm ${requirement.test ? 'text-green-600' : 'text-gray-500'}`}>
+                          {requirement.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {/* Password Strength Indicator */}
-            <PasswordStrengthIndicator password={password} />
 
+            {/* Confirm Password */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm sm:text-base font-medium text-gray-700">
-                Confirm password
+                Confirm New Password
               </label>
               <div className="mt-1 relative">
                 <input
@@ -163,6 +130,7 @@ function SignUp() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+                  placeholder="Confirm your new password"
                 />
                 <button
                   type="button"
@@ -176,34 +144,29 @@ function SignUp() {
                   )}
                 </button>
               </div>
+              
+              {/* Password Match Indicator */}
+              {confirmPassword && (
+                <div className="mt-2 flex items-center space-x-2">
+                  {passwordsMatch ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-sm text-green-600">Passwords match</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4 text-red-500" />
+                      <span className="text-sm text-red-600">Passwords don't match</span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
-            
-            {/* Password Match Indicator */}
-            {confirmPassword && (
-              <div className="flex items-center space-x-2">
-                {passwordsMatch ? (
-                  <>
-                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs">✓</span>
-                    </div>
-                    <span className="text-sm text-green-600">Passwords match</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs">✗</span>
-                    </div>
-                    <span className="text-sm text-red-600">Passwords don't match</span>
-                  </>
-                )}
-              </div>
-            )}
 
             {/* Validation Errors */}
             {password && !passwordValidation.isValid && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3 sm:p-4">
                 <div className="text-sm text-red-600">
-                  <p className="font-medium mb-2">Password requirements not met:</p>
                   <ul className="list-disc list-inside space-y-1">
                     {passwordValidation.errors.map((error, index) => (
                       <li key={index}>{error}</li>
@@ -213,22 +176,24 @@ function SignUp() {
               </div>
             )}
 
-            {signup.error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-3 sm:p-4">
-                <div className="text-sm sm:text-base text-red-600">
-                  {signup.error instanceof Error ? signup.error.message : 'Sign up failed'}
-                </div>
-              </div>
-            )}
-
             <div>
               <button
                 type="submit"
-                disabled={signup.isPending || !passwordValidation.isValid || !passwordsMatch}
+                disabled={!canSubmit || resetPassword.isPending}
                 className="w-full flex justify-center py-2.5 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm sm:text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {signup.isPending ? 'Creating account...' : 'Sign Up'}
+                {resetPassword.isPending ? 'Resetting...' : 'Reset Password'}
               </button>
+            </div>
+
+            <div className="text-center">
+              <Link
+                to="/verify-otp"
+                className="inline-flex items-center font-medium text-indigo-600 hover:text-indigo-500 text-sm sm:text-base"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to verification
+              </Link>
             </div>
           </form>
         </div>
@@ -237,4 +202,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default ResetPassword;

@@ -22,6 +22,7 @@ import {
 import { DEBT_TYPES } from '../types/debt';
 import DebtTypeModal from '../components/DebtTypeModal';
 import { useFormatters } from '../hooks/useFormatters';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const tabs = ['All', 'Lending', 'Borrowing'];
 
@@ -31,6 +32,7 @@ function Debts() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
   const [isDebtTypeModalOpen, setIsDebtTypeModalOpen] = useState(false);
+  const [debtToDelete, setDebtToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data: allDebts, isLoading: allLoading } = useDebts(currentPage, pageSize);
   const { data: lendingDebts, isLoading: lendingLoading } = useLendingDebts(currentPage, pageSize);
@@ -55,10 +57,11 @@ function Debts() {
   const totalPages = currentData?.totalPages || 0;
   const totalElements = currentData?.totalElements || 0;
 
-  const handleDeleteDebt = async (id: string, personName: string) => {
-    if (window.confirm(`Are you sure you want to delete debt with "${personName}"?`)) {
+  const handleDeleteDebt = async () => {
+    if (debtToDelete) {
       try {
-        await deleteDebt.mutateAsync(id);
+        await deleteDebt.mutateAsync(debtToDelete.id);
+        setDebtToDelete(null);
       } catch (error) {
         console.error('Failed to delete debt:', error);
       }
@@ -251,7 +254,7 @@ function Debts() {
                         <Edit className="w-5 h-5" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteDebt(debt.id, debt.personName)}
+                        onClick={() => setDebtToDelete({ id: debt.id, name: debt.personName })}
                         disabled={deleteDebt.isPending}
                         className="p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
                       >
@@ -302,6 +305,18 @@ function Debts() {
         isOpen={isDebtTypeModalOpen}
         onClose={() => setIsDebtTypeModalOpen(false)}
         onSelect={handleDebtTypeSelect}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!debtToDelete}
+        onClose={() => setDebtToDelete(null)}
+        onConfirm={handleDeleteDebt}
+        title="Delete Debt"
+        message={`Are you sure you want to delete debt with "${debtToDelete?.name}"? This action cannot be undone and will also delete all associated records.`}
+        confirmText="Delete Debt"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        isPending={deleteDebt.isPending}
       />
     </div>
   );

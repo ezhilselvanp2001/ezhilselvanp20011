@@ -28,7 +28,6 @@ export const useTransactions = (page = 0, size = 10, filters?: TransactionFilter
       if (filters?.endDate) params.append('endDate', filters.endDate);
 
       const response = await apiClient.get(`/transactions?${params.toString()}`);
-      console.log('Transactions response:', response.data.data.content);
       return response.data.data || {
         content: [],
         totalElements: 0,

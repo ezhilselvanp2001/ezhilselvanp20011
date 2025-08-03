@@ -13,6 +13,7 @@ import { useCategoriesByType } from '../hooks/useCategories';
 import { CreateMonthlyBudgetData, CreateYearlyBudgetData, CategoryLimit, MONTHS } from '../types/budget';
 import CategorySelectModal from '../components/CategorySelectModal';
 import CategoryIcon from '../components/CategoryIcon';
+import { formatCurrency } from '../utils/formatters';
 
 const tabs = ['Monthly', 'Yearly'];
 
@@ -366,12 +367,12 @@ function BudgetForm() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Total Budget:</span>
-                  <span className="font-medium">${watchedValues.totalLimit || '0.00'}</span>
+                  <span className="font-medium">{formatCurrency(watchedValues.totalLimit)}</span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
                   <span className="text-gray-600">Remaining:</span>
                   <span className={`font-medium ${remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ${remainingBudget}
+                   {formatCurrency(remainingBudget)}
                   </span>
                 </div>
               </div>

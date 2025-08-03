@@ -11,11 +11,15 @@ import {
   useDeleteAccount
 } from '../hooks/useAccounts';
 import { useFormatters } from '../hooks/useFormatters';
+import ConfirmationModal from '../components/ConfirmationModal';
+
+const creditCardtabs = ['Available', 'Outstanding'];
 
 function Accounts() {
   const [showBalance, setShowBalance] = useState(false);
-
-  const { data: allAccounts = [], isLoading: allAccountsLoading } = useAccounts();
+  const [creditCardTab, setCreditCardTab] = useState(0);
+  const [accountToDelete, setAccountToDelete] = useState<{ id: string; name: string } | null>(null);
+  const { isLoading: allAccountsLoading } = useAccounts();
   const { data: bankAccounts = [], isLoading: bankLoading } = useBankAccounts();
   const { data: walletAccounts = [], isLoading: walletLoading } = useWalletAccounts();
   const { data: creditCardAccounts = [], isLoading: creditLoading } = useCreditCardAccounts();
@@ -24,10 +28,11 @@ function Accounts() {
   const deleteAccount = useDeleteAccount();
   const { formatCurrency } = useFormatters();
 
-  const handleDeleteAccount = async (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete "${name}" account?`)) {
+  const handleDeleteAccount = async () => {
+    if (accountToDelete) {
       try {
-        await deleteAccount.mutateAsync(id);
+        await deleteAccount.mutateAsync(accountToDelete.id);
+        setAccountToDelete(null);
       } catch (error) {
         console.error('Failed to delete account:', error);
       }
@@ -38,30 +43,30 @@ function Accounts() {
     return showBalance ? formatCurrency(amount) : '****';
   };
 
-  const getAccountIcon = (type: string) => {
+  const getAccountIcon = (type: number) => {
     switch (type) {
-      case 'bank':
+      case 1: // Bank
         return <Building2 className="w-6 h-6" />;
-      case 'wallet':
+      case 2: // Wallet
         return <Wallet className="w-6 h-6" />;
-      case 'credit-card':
+      case 3: // Credit Card
         return <CreditCard className="w-6 h-6" />;
-      case 'cash':
+      case 4: // Cash
         return <Banknote className="w-6 h-6" />;
       default:
         return <Building2 className="w-6 h-6" />;
     }
   };
 
-  const getAccountTypeColor = (type: string) => {
+  const getAccountTypeColor = (type: number) => {
     switch (type) {
-      case 'bank':
+      case 1: // Bank
         return 'bg-blue-100 text-blue-700';
-      case 'wallet':
+      case 2: // Wallet
         return 'bg-green-100 text-green-700';
-      case 'credit-card':
+      case 3: // Credit Card
         return 'bg-purple-100 text-purple-700';
-      case 'cash':
+      case 4: // Cash
         return 'bg-yellow-100 text-yellow-700';
       default:
         return 'bg-gray-100 text-gray-700';
@@ -126,66 +131,25 @@ function Accounts() {
           <p className="text-xs sm:text-sm text-gray-500 mt-1">Total across all accounts</p>
         </div>
 
-        {/* Available Credit Card */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-          <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-3 sm:mb-4">Available Credit</h3>
-          <p className="text-xl sm:text-2xl font-bold text-green-600">
-            {formatCurrencyWithVisibility(summary?.availableCredit || 0)}
-          </p>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Credit cards available limit</p>
-        </div>
+        {/* Available Credit Card Balance Card */}
+        {creditCardTab === 0 ? (
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-3 sm:mb-4">Available Credit</h3>
+            <p className="text-xl sm:text-2xl font-bold text-green-600">
+              {formatCurrencyWithVisibility(summary?.availableCredit || 0)}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Credit cards available limit</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-3 sm:mb-4">Outstanding Credit</h3>
+            <p className="text-xl sm:text-2xl font-bold text-red-600">
+              {formatCurrencyWithVisibility(summary?.outstandingCredit || 0)}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Total outstanding amount</p>
+          </div>
+        )}
       </div>
-
-      {/* Summary Cards */}
-      {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">Available Balance</h3>
-            <button
-              onClick={() => setShowBalance(!showBalance)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              {showBalance ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(summary?.availableAmount || 0)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Total across all accounts</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">Available Credit</h3>
-            <button
-              onClick={() => setShowBalance(!showBalance)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              {showBalance ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
-          </div>
-          <p className="text-2xl font-bold text-green-600">
-            {formatCurrency(summary?.availableCredit || 0)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Credit cards available limit</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">Outstanding Credit</h3>
-            <button
-              onClick={() => setShowBalance(!showBalance)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              {showBalance ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
-          </div>
-          <p className="text-2xl font-bold text-red-600">
-            {formatCurrency(summary?.outstandingCredit || 0)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Total outstanding amount</p>
-        </div>
-      </div> */}
 
       {/* Account Sections */}
       <div className="space-y-6 sm:space-y-8">
@@ -223,22 +187,6 @@ function Accounts() {
                           Balance: {formatCurrency(account.currentBalance || 0)}
                         </p>
                       </div>
-                    </div>
-
-                    <div className="flex items-center space-x-1 sm:space-x-2">
-                      <Link
-                        to={`/accounts/edit/${account.id}`}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-gray-50"
-                      >
-                        <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteAccount(account.id, account.name)}
-                        disabled={deleteAccount.isPending}
-                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
-                      >
-                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -296,7 +244,7 @@ function Accounts() {
                         <Edit className="w-5 h-5" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteAccount(account.id, account.name)}
+                        onClick={() => setAccountToDelete({ id: account.id, name: account.name })}
                         disabled={deleteAccount.isPending}
                         className="p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
                       >
@@ -354,7 +302,7 @@ function Accounts() {
                         <Edit className="w-5 h-5" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteAccount(account.id, account.name)}
+                        onClick={() => setAccountToDelete({ id: account.id, name: account.name })}
                         disabled={deleteAccount.isPending}
                         className="p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
                       >
@@ -371,7 +319,7 @@ function Accounts() {
         {/* Credit Card Accounts */}
         {!creditLoading && (
           <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between p-6 gap-4 sm:gap-0 border-b border-gray-200">
               <div className="flex items-center space-x-3">
                 <div className="bg-purple-100 p-2 rounded-lg">
                   <CreditCard className="w-6 h-6 text-purple-600" />
@@ -380,6 +328,23 @@ function Accounts() {
                   <h2 className="text-lg font-semibold text-gray-900">Credit Cards ({creditCardAccounts.length})</h2>
                   <p className="text-sm text-gray-500">Credit cards and lines of credit</p>
                 </div>
+              </div>
+
+              <div className="flex flex-wrap justify-start sm:justify-end bg-gray-100 gap-2 rounded-lg p-1">
+                {creditCardtabs.map((tab, index) => {
+                  const active = creditCardTab === index;
+                  return (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setCreditCardTab(index)}
+                      className={`flex-1 text-sm font-medium rounded-lg px-2 py-2 transition-all duration-200 ${active ? "bg-white shadow text-black" : "text-gray-500 hover:text-black"
+                        }`}
+                    >
+                      {tab}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -416,7 +381,7 @@ function Accounts() {
                         <Edit className="w-5 h-5" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteAccount(account.id, account.name)}
+                        onClick={() => setAccountToDelete({ id: account.id, name: account.name })}
                         disabled={deleteAccount.isPending}
                         className="p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
                       >
@@ -430,6 +395,18 @@ function Accounts() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!accountToDelete}
+        onClose={() => setAccountToDelete(null)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account"
+        message={`Are you sure you want to delete "${accountToDelete?.name}" account? This action cannot be undone and may affect your transaction history.`}
+        confirmText="Delete Account"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        isPending={deleteAccount.isPending}
+      />
     </div>
   );
 }

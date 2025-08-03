@@ -84,7 +84,7 @@ function Budgets() {
         to={`/budgets/analysis/${budget.id}?type=${activeTab === 0 ? 'monthly' : 'yearly'}`}
         className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow p-6"
       >
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-3">
             <div className="bg-indigo-100 p-2 rounded-lg">
               <Target className="w-6 h-6 text-indigo-600" />

@@ -14,6 +14,52 @@ function BudgetAnalysis() {
   const { data: budget, isLoading } = useBudgetAnalysis(budgetId || '', budgetType);
   const { formatCurrency } = useFormatters();
 
+  // Get color hex value from category color name
+  const getCategoryColorHex = (colorName: string): string => {
+    const colorMap: Record<string, string> = {
+      'indigo': '#6366F1',
+      'teal': '#14B8A6',
+      'yellow': '#F59E0B',
+      'orange': '#F97316',
+      'maroon': '#991B1B',
+      'pink': '#EC4899',
+      'lime': '#84CC16',
+      'violet': '#8B5CF6',
+      'rose': '#F43F5E',
+      'slate': '#64748B',
+      'sky': '#0EA5E9',
+      'purple': '#A855F7',
+      'stone': '#78716C',
+      'red': '#EF4444',
+      'green': '#22C55E',
+      'blue': '#3B82F6',
+      'amber': '#F59E0B',
+      'cyan': '#06B6D4',
+      'emerald': '#10B981',
+      'fuchsia': '#D946EF',
+      'gray': '#6B7280',
+      'zinc': '#71717A',
+      'brown': '#92400E',
+      'magenta': '#BE185D',
+      'bronze': '#A16207',
+      'peach': '#FED7AA',
+      'lavender': '#DDD6FE',
+      'mint': '#BBF7D0',
+      'olive': '#365314',
+      'navy': '#1E3A8A',
+      'gold': '#FBBF24',
+      'charcoal': '#374151',
+      'coral': '#FCA5A5',
+      'aqua': '#A7F3D0',
+      'plum': '#6B21A8',
+      'mustard': '#D97706',
+      'ruby': '#B91C1C',
+      'sapphire': '#1E3A8A',
+      'topaz': '#FDE047'
+    };
+    return colorMap[colorName] || '#6B7280';
+  };
+
   const getProgressPercentage = (spent: number, budget: number) => {
     return budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
   };
@@ -106,21 +152,18 @@ function BudgetAnalysis() {
   const pieData = budget.categories.map(category => ({
     name: category.name,
     value: category.spent,
-    color: `#${category.color}`,
-    icon: category.icon
+    color: getCategoryColorHex(category.color),
   }));
 
   const barData = budget.categories.map(category => ({
     name: category.name,
     budget: category.limit,
     spent: category.spent,
-    color: `#${category.color}`
   }));
 
-  const COLORS = budget.categories.map(cat => `#${cat.color}`);
 
   return (
-    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto min-h-screen">
+    <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto">
       <div className="mb-8">
         <Link
           to="/budgets"
@@ -179,20 +222,20 @@ function BudgetAnalysis() {
         {/* Spending Distribution */}
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Spending Distribution</h3>
-          <div className="h-48 sm:h-64">
+          <div className="h-64 sm:h-72 md:h-80 lg:h-96">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={window.innerWidth < 640 ? 60 : 80}
+                  outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => formatCurrency(Number(value))} />
@@ -205,15 +248,30 @@ function BudgetAnalysis() {
       {/* Category Breakdown */}
       <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Category Breakdown</h3>
-        <div className="h-48 sm:h-64 mb-4 sm:mb-6">
+        <div className="h-64 sm:h-72 md:h-80 lg:h-96 mb-4 sm:mb-6">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fontSize: 12 }}
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={60}
+              />
               <YAxis />
               <Tooltip formatter={(value) => formatCurrency(Number(value))} />
               <Bar dataKey="budget" fill="#E5E7EB" name="Budget" />
-              <Bar dataKey="spent" fill="#6366F1" name="Spent" />
+              <Bar 
+                dataKey="spent" 
+                name="Spent" 
+                radius={[2, 2, 0, 0]}
+              >
+                {barData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getCategoryColorHex(budget.categories[index].color)} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -228,9 +286,9 @@ function BudgetAnalysis() {
             return (
               <div key={category.categoryId} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 border border-gray-200 rounded-lg">
                 <CategoryIcon icon={category.icon} color={category.color} />
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1 sm:mb-2">
-                    <h4 className="text-sm sm:text-base font-medium text-gray-900">{category.name}</h4>
+                    <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">{category.name}</h4>
                     <div className="text-right">
                       <p className="text-sm sm:text-base font-semibold">{formatCurrency(category.spent)}</p>
                       {category.limit > 0 && (
@@ -250,16 +308,18 @@ function BudgetAnalysis() {
                     </div>
                   )}
                 </div>
-                {category.limit > 0 && (
-                  <div className="text-right">
+                <div className="text-right flex-shrink-0">
+                  {category.limit > 0 ? (
                     <span className={`text-xs sm:text-sm font-medium ${
                       categoryPercentage >= 90 ? 'text-red-600' : 
                       categoryPercentage >= 75 ? 'text-yellow-600' : 'text-green-600'
                     }`}>
                       {Math.round(categoryPercentage)}%
                     </span>
-                  </div>
-                )}
+                  ) : (
+                    <span className="text-xs sm:text-sm text-gray-400">No limit</span>
+                  )}
+                </div>
               </div>
             );
           })}

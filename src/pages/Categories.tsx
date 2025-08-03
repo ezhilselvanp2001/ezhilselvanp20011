@@ -4,12 +4,14 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import { useCategoriesByType, useDefaultCategory, useDeleteCategory } from '../hooks/useCategories';
 import CategoryIcon from '../components/CategoryIcon';
 import DefaultCategoryModal from '../components/DefaultCategoryModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const tabs = ['Expense', 'Income'];
 
 function Categories() {
   const [activeTab, setActiveTab] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const currentType = activeTab === 0 ? 1 : 2;
 
@@ -17,10 +19,11 @@ function Categories() {
   const { data: defaultCategory, isLoading: defaultLoading } = useDefaultCategory(currentType);
   const deleteCategory = useDeleteCategory();
 
-  const handleDeleteCategory = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
+  const handleDeleteCategory = async () => {
+    if (categoryToDelete) {
       try {
-        await deleteCategory.mutateAsync(id);
+        await deleteCategory.mutateAsync(categoryToDelete.id);
+        setCategoryToDelete(null);
       } catch (error) {
         console.error('Failed to delete category:', error);
       }
@@ -151,19 +154,32 @@ function Categories() {
                 </div>
 
                 <div className="flex items-center space-x-1 sm:space-x-2">
-                  <Link
-                    to={`/categories/edit/${category.id}`}
-                    className="p-1.5 sm:p-2 text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-gray-50"
-                  >
-                    <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </Link>
-                  <button
-                    onClick={() => handleDeleteCategory(category.id)}
-                    disabled={deleteCategory.isPending}
-                    className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
-                  >
-                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
+                  {category.deletable ? (
+                    <>
+                      <Link
+                        to={`/categories/edit/${category.id}`}
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-gray-50"
+                      >
+                        <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </Link>
+                      <button
+                        onClick={() => setCategoryToDelete({ id: category.id, name: category.name })}
+                        disabled={deleteCategory.isPending}
+                        className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 rounded-md hover:bg-gray-50"
+                      >
+                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex items-center space-x-1 sm:space-x-2">
+                      <span className="p-1.5 sm:p-2 text-gray-300 cursor-not-allowed rounded-md">
+                        <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </span>
+                      <span className="p-1.5 sm:p-2 text-gray-300 cursor-not-allowed rounded-md">
+                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -178,6 +194,18 @@ function Categories() {
         categories={categories}
         type={currentType}
         currentDefault={defaultCategory}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!categoryToDelete}
+        onClose={() => setCategoryToDelete(null)}
+        onConfirm={handleDeleteCategory}
+        title="Delete Category"
+        message={`Are you sure you want to delete "${categoryToDelete?.name}"? This action cannot be undone.`}
+        confirmText="Delete Category"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        isPending={deleteCategory.isPending}
       />
     </div>
   );
