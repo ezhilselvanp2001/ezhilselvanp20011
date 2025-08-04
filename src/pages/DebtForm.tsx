@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useCreateDebt, useUpdateDebt, useDebt } from '../hooks/useDebts';
-import { useAccounts, useDefaultPaymentMode } from '../hooks/useAccounts';
+import { useAccounts } from '../hooks/useAccounts';
 import { CreateDebtData } from '../types/debt';
 import AccountSelectModal from '../components/AccountSelectModal';
 
@@ -16,6 +16,7 @@ interface FormData {
   amount: number;
   description: string;
   accountId: string;
+  paymentModeId?: string;
   recordType: '1' | '2';
 }
 
@@ -33,7 +34,6 @@ function DebtForm() {
   const { data: accounts = [] } = useAccounts();
   const createDebt = useCreateDebt();
   const updateDebt = useUpdateDebt();
-  const { data: defaultPaymentMode } = useDefaultPaymentMode();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       personName: '',
@@ -43,7 +43,8 @@ function DebtForm() {
       date: new Date().toISOString().split('T')[0],
       amount: 0,
       description: '',
-      accountId: defaultPaymentMode?.id,
+      accountId: '',
+      paymentModeId: '',
       recordType: debtType || '1'
     }
   });
@@ -51,6 +52,7 @@ function DebtForm() {
   const watchedType = watch('type');
   const watchedValues = watch();
   const selectedAccount = accounts.find(acc => acc.id === watchedValues.accountId);
+  const selectedPaymentMode = selectedAccount?.linkedPaymentModes?.find(pm => pm.id === watchedValues.paymentModeId);
   // Load existing debt data for editing
   useEffect(() => {
     if (isEditing && debt) {
@@ -74,6 +76,7 @@ function DebtForm() {
           amount: data.amount,
           description: data.description,
           accountId: data.accountId,
+          paymentModeId: data.paymentModeId,
           type: data.recordType
         }
       };
@@ -334,16 +337,52 @@ function DebtForm() {
                 </div>
 
                 {selectedAccount ? (
+                <div className="space-y-3">
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    {/* <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-medium">
-                          {selectedAccount.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{selectedAccount.name}</p>
-                        <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
-                      </div> */}
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-medium">
+                        {selectedAccount.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{selectedAccount.name}</p>
+                      <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Payment Mode Selection */}
+                  {selectedAccount.linkedPaymentModes && selectedAccount.linkedPaymentModes.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Payment Mode (Optional)
+                      </label>
+                      {selectedPaymentMode ? (
+                        <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                          <div className="p-2 rounded-lg bg-blue-100">
+                            <span className="text-blue-600 text-sm font-medium">PM</span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{selectedPaymentMode.name}</p>
+                            <p className="text-sm text-gray-500">{selectedPaymentMode.type}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {selectedAccount.linkedPaymentModes.map((paymentMode) => (
+                            <button
+                              key={paymentMode.id}
+                              type="button"
+                              onClick={() => setValue('paymentModeId', paymentMode.id)}
+                              className="p-2 text-left border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors"
+                            >
+                              <p className="text-sm font-medium text-gray-900">{paymentMode.name}</p>
+                              <p className="text-xs text-gray-500">{paymentMode.type}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   </div>
                 ) : (
                   <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
@@ -354,26 +393,6 @@ function DebtForm() {
                 {errors.accountId && (
                   <p className="mt-1 text-sm text-red-600">{errors.accountId.message}</p>
                 )}
-
-
-                {/* <label htmlFor="accountId" className="block text-sm font-medium text-gray-700 mb-2">
-                  Account
-                </label>
-                <select
-                  {...register('accountId', { required: 'Account is required' })}
-                  id="accountId"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <option value="">Select an account</option>
-                  {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} ({account.type})
-                    </option>
-                  ))}
-                </select>
-                {errors.accountId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.accountId.message}</p>
-                )} */}
               </div>
             </div>
           </>
@@ -420,9 +439,15 @@ function DebtForm() {
         isOpen={isAccountModalOpen}
         onClose={() => setIsAccountModalOpen(false)}
         accounts={accounts}
-        onSelect={(account) => setValue('accountId', account.id)}
+        onSelect={(account) => {
+          setValue('accountId', account.id);
+          setValue('paymentModeId', '');
+        }}
+        onPaymentModeSelect={(paymentModeId) => setValue('paymentModeId', paymentModeId)}
         selectedAccount={selectedAccount}
+        selectedPaymentModeId={watchedValues.paymentModeId}
         title="Select Account"
+        showPaymentModes={true}
       />
     </div>
   );

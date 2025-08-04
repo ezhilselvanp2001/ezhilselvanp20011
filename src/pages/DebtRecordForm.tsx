@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useCreateDebtRecord, useUpdateDebtRecord, useDebtRecord } from '../hooks/useDebts';
-import { useAccounts, useDefaultPaymentMode } from '../hooks/useAccounts';
+import { useAccounts } from '../hooks/useAccounts';
 import { CreateDebtRecordData } from '../types/debt';
 import AccountSelectModal from '../components/AccountSelectModal';
 
@@ -12,6 +12,7 @@ interface FormData {
   amount: number;
   description: string;
   accountId: string;
+  paymentModeId?: string;
   type: '1' | '2';
 }
 
@@ -28,20 +29,20 @@ function DebtRecordForm() {
   const { data: accounts = [] } = useAccounts();
   const createRecord = useCreateDebtRecord();
   const updateRecord = useUpdateDebtRecord();
-  const { data: defaultPaymentMode } = useDefaultPaymentMode();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       date: new Date().toISOString().split('T')[0],
       amount: 0,
       description: '',
-      accountId: defaultPaymentMode?.id,
+      accountId: '',
+      paymentModeId: '',
       type: recordType || '1'
     }
   });
 
   const watchedValues = watch();
   const selectedAccount = accounts.find(acc => acc.id === watchedValues.accountId);
-  // accounts.find(acc => acc.id === watch('accountId'));
+  const selectedPaymentMode = selectedAccount?.linkedPaymentModes?.find(pm => pm.id === watchedValues.paymentModeId);
 
   // Load existing record data for editing
   useEffect(() => {
@@ -50,6 +51,7 @@ function DebtRecordForm() {
       setValue('amount', record.amount);
       setValue('description', record.description);
       setValue('accountId', record.accountId);
+      setValue('paymentModeId', record.paymentModeId || '');
       setValue('type', record.type);
     }
   }, [isEditing, record, setValue]);
@@ -61,6 +63,7 @@ function DebtRecordForm() {
         amount: data.amount,
         description: data.description,
         accountId: data.accountId,
+        paymentModeId: data.paymentModeId,
         type: data.type
       };
 
@@ -218,17 +221,53 @@ function DebtRecordForm() {
           </div>
 
           {selectedAccount ? (
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-medium">
-                  {selectedAccount.name.charAt(0).toUpperCase()}
-                </span>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-medium">
+                    {selectedAccount.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">{selectedAccount.name}</p>
+                  <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-gray-900">{selectedAccount.name}</p>
-                <p className="text-sm text-gray-500 capitalize">{selectedAccount.type}</p>
+              
+              {/* Payment Mode Selection */}
+              {selectedAccount.linkedPaymentModes && selectedAccount.linkedPaymentModes.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Payment Mode (Optional)
+                  </label>
+                  {selectedPaymentMode ? (
+                    <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                      <div className="p-2 rounded-lg bg-blue-100">
+                        <span className="text-blue-600 text-sm font-medium">PM</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{selectedPaymentMode.name}</p>
+                        <p className="text-sm text-gray-500">{selectedPaymentMode.type}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {selectedAccount.linkedPaymentModes.map((paymentMode) => (
+                        <button
+                          key={paymentMode.id}
+                          type="button"
+                          onClick={() => setValue('paymentModeId', paymentMode.id)}
+                          className="p-2 text-left border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors"
+                        >
+                          <p className="text-sm font-medium text-gray-900">{paymentMode.name}</p>
+                          <p className="text-xs text-gray-500">{paymentMode.type}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               </div>
-            </div>
           ) : (
             <div className="p-3 bg-gray-50 rounded-lg text-gray-500">
               No account selected
@@ -273,9 +312,15 @@ function DebtRecordForm() {
         isOpen={isAccountModalOpen}
         onClose={() => setIsAccountModalOpen(false)}
         accounts={accounts}
-        onSelect={(account) => setValue('accountId', account.id)}
+        onSelect={(account) => {
+          setValue('accountId', account.id);
+          setValue('paymentModeId', '');
+        }}
+        onPaymentModeSelect={(paymentModeId) => setValue('paymentModeId', paymentModeId)}
         selectedAccount={selectedAccount}
+        selectedPaymentModeId={watchedValues.paymentModeId}
         title="Select Account"
+        showPaymentModes={true}
       />
     </div>
   );

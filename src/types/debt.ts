@@ -14,15 +14,28 @@ export interface DebtRecord {
   id: string;
   debtId: string;
   date: string;
+  time?: {
+    hour: number;
+    minute: number;
+    second: number;
+    nano: number;
+  } | null;
   amount: number;
+  paymentModeId?: string | null;
   description: string;
   accountId: string;
   type: '1' | '2'; // 1 = Paid, 2 = Received
   account?: {
     id: string;
     name: string;
-    type: string;
+    type: number;
+    default: boolean;
   };
+  paymentMode?: {
+    id: string;
+    name: string;
+    type: number;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -60,6 +73,7 @@ export interface CreateDebtRecordData {
   amount: number;
   description: string;
   accountId: string;
+  paymentModeId?: string;
   type: '1' | '2';
 }
 
@@ -68,6 +82,7 @@ export interface UpdateDebtRecordData {
   amount?: number;
   description?: string;
   accountId?: string;
+  paymentModeId?: string;
   type?: '1' | '2';
 }
 

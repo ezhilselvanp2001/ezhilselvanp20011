@@ -249,7 +249,7 @@ export const useReceivedRecords = (debtId: string, page = 0, size = 10) => {
   return useQuery<PaginatedDebtRecords>({
     queryKey: ['debt-records', debtId, 'received', page, size],
     queryFn: async () => {
-      const response = await apiClient.get(`/records/id/${debtId}/received?page=${page}&size=${size}`);
+      const response = await apiClient.get(`/records/${debtId}/received?page=${page}&size=${size}`);
       return response.data.data || {
         content: [],
         totalElements: 0,

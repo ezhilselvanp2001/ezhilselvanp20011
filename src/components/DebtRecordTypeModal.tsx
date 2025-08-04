@@ -35,7 +35,7 @@ export default function DebtRecordTypeModal({ isOpen, onClose, debtId }: DebtRec
           
           <div className="space-y-4">
             <button
-              onClick={() => handleSelect('2')}
+              onClick={() => handleSelect('1')}
               className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all text-left group"
             >
               <div className="flex items-center space-x-3">
@@ -43,14 +43,14 @@ export default function DebtRecordTypeModal({ isOpen, onClose, debtId }: DebtRec
                   <TrendingUp className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Money Received</h3>
-                  <p className="text-sm text-gray-600">Track money you have received from someone</p>
+                  <h3 className="font-semibold text-gray-900">Money Paid</h3>
+                  <p className="text-sm text-gray-600">Record money you have paid to someone</p>
                 </div>
               </div>
             </button>
 
             <button
-              onClick={() => handleSelect('1')}
+              onClick={() => handleSelect('2')}
               className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-all text-left group"
             >
               <div className="flex items-center space-x-3">
@@ -58,8 +58,8 @@ export default function DebtRecordTypeModal({ isOpen, onClose, debtId }: DebtRec
                   <TrendingDown className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Money Paid</h3>
-                  <p className="text-sm text-gray-600">Track money you have paid to someone</p>
+                  <h3 className="font-semibold text-gray-900">Money Received</h3>
+                  <p className="text-sm text-gray-600">Record money you have received from someone</p>
                 </div>
               </div>
             </button>
